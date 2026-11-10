@@ -46,7 +46,7 @@ The reproducible checks are in [`oracle/04_data_validation.sql`](../oracle/04_da
 
 **Interpretation:** Oracle confirms that the declared primary-key constraints are enabled and validated, which enforces uniqueness and non-nullness of the listed primary-key columns. This does not establish that unrelated fields are free of duplicates or missing values.
 
-- Duplicate `orders.order_id` groups (separate explicit query): **Pending**
+- Duplicate `orders.order_id` groups: **0 — PASS** (verified from SQL Developer screenshot on November 10, 2026; query groups `ORDERS` by `ORDER_ID` and counts groups with more than one row).
 - Foreign-key and orphan-record checks: **Pending**
 
 **Evidence:** Project owner's screenshot of SQL Developer query results, November 10, 2026.
