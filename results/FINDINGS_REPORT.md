@@ -22,6 +22,8 @@ Explore whether late delivery is associated with lower customer review scores an
 
 **Methodology:** Using Oracle SQL, delivered orders were classified as either late or on time by comparing their actual delivery timestamps with their estimated delivery timestamps. Orders without the required delivery dates or customer reviews were excluded. For orders with multiple reviews, the review scores were averaged to ensure each order contributed only once to the analysis. The reproducible query is [Q5 in `oracle/04_queries.sql`](../oracle/04_queries.sql).
 
+![Bar chart of mean review scores for on-time versus late delivered orders](../visualizations/delivery_reviews.svg)
+
 **Results:** A total of **95,824 orders** were analyzed.
 
 | Delivery status | Orders analyzed | Average review score (1–5) |
@@ -44,6 +46,8 @@ Explore whether late delivery is associated with lower customer review scores an
 
 **Methodology:** Group orders by `customer_unique_id` and count distinct `order_id` values per customer. Count a customer as a repeat customer if they placed more than one distinct order. Divide the repeat-customer count by the number of customers represented in the orders table. The reproducible query is [Q6 in `oracle/04_queries.sql`](../oracle/04_queries.sql).
 
+![Donut chart showing observed repeat-purchase rate of 3.12 percent](../visualizations/repeat_purchases.svg)
+
 | Total unique customers | Repeat customers (2+ orders) | Customers with 1 order | Observed repeat-purchase rate |
 |---:|---:|---:|---:|
 | 96,096 | 2,997 | 93,099 | **3.12%** |
@@ -63,6 +67,8 @@ Explore whether late delivery is associated with lower customer review scores an
 **Business question:** Which product categories have the highest item-price sales total among delivered orders?
 
 **Methodology:** Join `ORDER_ITEMS`, `ORDERS`, `PRODUCTS`, and `PRODUCT_CATEGORIES`. Restrict to orders whose status is `delivered`; group by translated product category; sum `ORDER_ITEMS.PRICE`; and count distinct orders per category. Rank by the sum of item prices and keep the top ten. Query: [Q1 in `oracle/04_queries.sql`](../oracle/04_queries.sql).
+
+![Horizontal bar chart of the ten top product categories by item-price sales](../visualizations/top_categories.svg)
 
 | Rank | Product category | Item-price sales total | Distinct orders |
 |---:|---|---:|---:|
