@@ -91,11 +91,26 @@ Explore whether late delivery is associated with lower customer review scores an
 
 **Verification:** Transcribed from the project owner's Oracle SQL Developer Q1 screenshot dated November 10, 2026.
 
+## Q2 — Monthly Orders and Merchandise Sales (Source CSV Cross-check)
+
+**Status:** Calculated independently from the original source CSVs; **pending explicit reconciliation with Oracle SQL Developer Q2 output**.
+
+**Business question:** How do order counts and item-price sales vary by purchase month?
+
+**Methodology:** Join `olist_orders_dataset.csv` to `olist_order_items_dataset.csv` by `order_id`. Group by the month of `order_purchase_timestamp`, count distinct orders with at least one order item, and sum `price` (excluding freight). This replicates the join and aggregations in [Q2 of `oracle/04_queries.sql`](../oracle/04_queries.sql). The CSV inputs correspond to the Olist source files used for the Oracle project; computed totals still need comparison with your displayed Oracle results.
+
+![Monthly item-price sales (BRL) line chart](../visualizations/monthly_sales.svg)
+
+[Download the 24-row monthly results CSV](q2_monthly_sales.csv)
+
+**Source-derived observations:** The highest month in this calculation is **November 2017**, with **7,451** distinct orders and **BRL 1,010,271.37** in summed item prices. Summing the 24 represented months yields **BRL 13,591,643.70**. These are source-derived computations, **not yet marked as independently verified Oracle outputs**.
+
+**Limitations:** Item-price sales exclude freight and do not represent net profit or verified accounting revenue. Orders without items are excluded by the inner join. Coverage of September 2016 and September 2018 is sparse, and months in the historical dataset are not necessarily complete. Month-by-month variation alone does not establish seasonality or business drivers.
+
 ## Other analyses
 
 | Query | Business question | Verified output |
 |---|---|---|
-| Q2 | Monthly orders and revenue | Pending |
 | Q3 | Order status breakdown | Pending |
 | Q4 | Late delivery by state | Pending |
 | Q7 | Top sellers and reviews | Pending |
