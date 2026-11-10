@@ -1,6 +1,6 @@
 # Olist E-Commerce Orders Database & Customer Analytics
 
-**Status: In progress | Oracle SQL Developer · SQL · Python · Relational Data Modeling**
+**Status: SQL database and validation complete; business analysis in progress | Oracle SQL Developer · SQL · Relational Data Modeling**
 
 A database management and analytics portfolio project using the [Brazilian E-Commerce Public Dataset by Olist](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce), covering approximately 100,000 orders from 2016–2018.
 
@@ -10,6 +10,22 @@ A database management and analytics portfolio project using the [Brazilian E-Com
 - How often do customers make repeat purchases?
 - Which product categories generate the most revenue?
 - How do delivery performance and satisfaction vary across regions?
+
+## Verified findings and visualizations
+
+These visuals use results executed in Oracle SQL Developer and documented in the [findings report](results/FINDINGS_REPORT.md). They are descriptive analyses of the historical Olist data, not causal or predictive estimates.
+
+### Top product categories by item-price sales
+
+![Top ten product categories ranked by delivered-order item-price sales](visualizations/top_categories.svg)
+
+### Delivery timeliness and customer review scores
+
+![Average customer review score for on-time and late delivered orders](visualizations/delivery_reviews.svg)
+
+### Observed repeat-purchase rate
+
+![3.12 percent of unique customers placed more than one order](visualizations/repeat_purchases.svg)
 
 ## Project approach
 
@@ -22,7 +38,9 @@ A database management and analytics portfolio project using the [Brazilian E-Com
 ## Portfolio artifacts
 
 - [Entity relationship diagram](diagrams/ER_DIAGRAM.md) — GitHub-rendered Mermaid diagram based on the Oracle schema
-- [Findings report](results/FINDINGS_REPORT.md) — analysis questions and placeholders for verified results
+- [Findings report](results/FINDINGS_REPORT.md) — verified Q1, Q5 and Q6 results plus pending questions
+- [Data quality report](results/data_quality_report.md) — source-to-final reconciliation and integrity checks
+- [Charts](visualizations/) — SVG visualizations generated from verified SQL results
 
 ## Repository structure
 
@@ -30,9 +48,11 @@ A database management and analytics portfolio project using the [Brazilian E-Com
 - `oracle/02_staging_tables.sql` — CSV import staging tables
 - `oracle/03_load.sql` — transformation and loading queries
 - `oracle/04_queries.sql` — ten business analysis queries
+- `oracle/04_data_validation.sql` — reproducible validation queries
 - `scripts/prepare_csv_for_oracle.py` — CSV cleanup utility
-- `diagrams/` — ER diagram (to be added)
-- `results/` — verified query output and interpretation (to be added)
+- `diagrams/ER_DIAGRAM.md` — documented ER diagram
+- `results/` — verified findings and validation reporting
+- `visualizations/` — three charts based on verified Oracle query results
 
 ## Running the Oracle version
 
@@ -43,7 +63,7 @@ A database management and analytics portfolio project using the [Brazilian E-Com
 5. Import the prepared CSV files from `data/oracle/` into the corresponding staging tables using SQL Developer's Import Data wizard.
 6. Run `oracle/03_load.sql`, inspect row counts, and then execute queries in `oracle/04_queries.sql`.
 
-**Validation note:** The SQL scripts have not yet been confirmed as successfully executed on a live Oracle database. Any expected results should be treated as provisional until reproduced and verified.
+**Validation note:** The project owner successfully executed the Oracle load and validation checks. Actual final-table counts match staging-derived expectations for all nine tables; nine primary keys and nine foreign keys are enabled and validated. Eight delivered-status orders have missing actual delivery timestamps and remain documented as a data quality caveat. See [data quality report](results/data_quality_report.md).
 
 ## Skills demonstrated
 
