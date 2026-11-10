@@ -19,6 +19,11 @@ A database management and analytics portfolio project using the [Brazilian E-Com
 4. Run documented SQL queries to investigate customer and delivery outcomes.
 5. Summarize results, limitations, and business recommendations.
 
+## Portfolio artifacts
+
+- [Entity relationship diagram](diagrams/ER_DIAGRAM.md) — GitHub-rendered Mermaid diagram based on the Oracle schema
+- [Findings report](results/FINDINGS_REPORT.md) — analysis questions and placeholders for verified results
+
 ## Repository structure
 
 - `oracle/01_schema.sql` — relational tables, keys, and indexes
