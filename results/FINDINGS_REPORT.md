@@ -1,6 +1,6 @@
 # Olist E-Commerce Customer Analytics — Findings Report
 
-**Status:** In progress. Q5 results verified from Oracle SQL Developer screenshot dated November 10, 2026. All other business-query results remain pending.
+**Status:** In progress. Q5 and Q6 results verified from Oracle SQL Developer screenshots dated November 10, 2026. Other business-query results remain pending.
 
 ## Objective
 
@@ -38,15 +38,25 @@ Explore whether late delivery is associated with lower customer review scores an
 
 **Verification:** Results transcribed from the project owner's Oracle SQL Developer `Olist_Project` / `Q5.sql` screenshot dated November 10, 2026.
 
-## Q6: Repeat customers
+## Q6 — Repeat Customer Behavior
 
-**Question:** What percentage of unique customers have more than one order?
+**Business Question:** What percentage of unique Olist customers placed more than one order in the observed dataset?
 
-| Unique customers | Repeat customers | Repeat rate |
-|---:|---:|---:|
-| Pending | Pending | Pending |
+**Methodology:** Group orders by `customer_unique_id` and count distinct `order_id` values per customer. Count a customer as a repeat customer if they placed more than one distinct order. Divide the repeat-customer count by the number of customers represented in the orders table. The reproducible query is [Q6 in `oracle/04_queries.sql`](../oracle/04_queries.sql).
 
-**Interpretation:** Pending verified results. The observation window is limited to 2016–2018.
+| Total unique customers | Repeat customers (2+ orders) | Customers with 1 order | Observed repeat-purchase rate |
+|---:|---:|---:|---:|
+| 96,096 | 2,997 | 93,099 | **3.12%** |
+
+**Key Finding:** **2,997 out of 96,096** unique customers placed more than one order (**2,997 ÷ 96,096 × 100 ≈ 3.12%**). The other **93,099** customers placed one order in the recorded period.
+
+**Business Implications:** Repeat purchases were uncommon within the data's observation window. Investigating repeat behavior by customer cohort or product category may help identify patterns, but no specific retention improvement is established by this descriptive result.
+
+**Limitations:** This is the *observed repeat-purchase rate*, not a lifetime customer retention rate. The dataset has a limited historical window (2016–2018), and customers near the end of the period have less time to make another purchase. The measure counts orders, not purchased items, and does not establish why customers did or did not return.
+
+**Verification:** Values transcribed from the project owner's Oracle SQL Developer screenshot dated November 10, 2026; Q6 query results.
+
+
 
 ## Other analyses
 
