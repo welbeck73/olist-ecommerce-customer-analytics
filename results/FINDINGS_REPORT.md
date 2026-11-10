@@ -26,7 +26,7 @@ Explore whether late delivery is associated with lower customer review scores an
 |---|---:|---:|
 | Late | 7,661 | 2.57 |
 | On Time | 88,163 | 4.29 |
-| **Total** | **95,824** | **Not calculated in this query** |
+| **Total** | **95,824** | **1.72** |
 
 **Finding:** The average score for on-time orders was **1.72 points higher** than for late orders (4.29 − 2.57, based on rounded group means). **7,661 / 95,824 ≈ 7.99%** of reviewed delivered orders in this comparison were late. This is an association; the analysis does **not** establish that late delivery causes lower review scores.
 
