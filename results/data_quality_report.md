@@ -2,31 +2,39 @@
 
 **Project:** E-Commerce Orders Database & Customer Analytics  
 **Database:** Oracle Autonomous Database / SQL Developer  
-**Status:** All nine final-table counts verified against reference counts from the project owner's SQL Developer script output on November 10, 2026; all nine primary-key constraints and nine foreign-key constraints verified enabled and validated; all three orphan-record checks returned zero; order-field missing-value counts documented; review-score minimum/maximum and missing count documented; review-score validation complete; delivery-status breakdown documented; 8 delivered-status orders missing delivery timestamps flagged for investigation
+**Status:** All nine transformation-aware final-table counts verified against staging-derived expected counts from the project owner's SQL Developer script output on November 10, 2026; all nine primary-key constraints and nine foreign-key constraints verified enabled and validated; all three orphan-record checks returned zero; order-field missing-value counts documented; review-score minimum/maximum and missing count documented; review-score validation complete; delivery-status breakdown documented; 8 delivered-status orders missing delivery timestamps flagged for investigation
 
 ## Purpose
 
 Before drawing conclusions about customer satisfaction, late deliveries, and repeat purchases, check that the relational database loaded correctly and that important business fields are usable.
 
-The reproducible checks are in [`oracle/04_data_validation.sql`](../oracle/04_data_validation.sql). The row-count section records actual SQL Developer results supplied by the project owner on November 10, 2026. Primary-key, foreign-key, and orphan-record results are also verified from the project owner's SQL Developer screenshots. Missing-value and order-status results have also been verified from screenshots. The 8 delivered-status records with missing delivery timestamps remain a documented anomaly for investigation.
+The reproducible checks are in [`oracle/04_data_validation.sql`](../oracle/04_data_validation.sql). The source-to-final row-count section records SQL Developer results supplied by the project owner on November 10, 2026, using staging tables and load-transformation logic. Primary-key, foreign-key, and orphan-record results are also verified from the project owner's SQL Developer screenshots. Missing-value and order-status results have also been verified from screenshots. The 8 delivered-status records with missing delivery timestamps remain a documented anomaly for investigation.
 
-## 1. Row counts
+## 1. Source-to-final row-count reconciliation
 
-| Final table | Actual rows | Source / expected rows | Status |
-|---|---:|---:|---|
-| LOCATIONS | 15,078 | 15,078 (previous reference) | MATCH |
-| CUSTOMERS | 96,096 | 96,096 (previous reference) | MATCH |
-| SELLERS | 3,095 | 3,095 (previous reference) | MATCH |
-| PRODUCT_CATEGORIES | 73 | 73 (previous reference) | MATCH |
-| PRODUCTS | 32,951 | 32,951 (previous reference) | MATCH |
-| ORDERS | 99,441 | 99,441 (source rows) | MATCH |
-| ORDER_ITEMS | 112,650 | 112,650 (source rows) | MATCH |
-| ORDER_PAYMENTS | 103,886 | 103,886 (source rows) | MATCH |
-| ORDER_REVIEWS | 99,224 | 99,224 (source rows) | MATCH |
+These values were produced by a SQL query against the imported staging tables and final Oracle tables, with expected final counts calculated using the selection/deduplication rules in `oracle/03_load.sql`. Evidence: project owner's Oracle SQL Developer screenshot, November 10, 2026.
 
-**Row-count result:** 9/9 final-table counts match the stated reference counts. This confirms counts, not full record-level correctness or completeness.
+| Final table | Source rows | Expected final rows | Actual final rows | Status |
+|---|---:|---:|---:|---|
+| CUSTOMERS | 99,441 | 96,096 | 96,096 | MATCH |
+| LOCATIONS | 102,536 | 15,078 | 15,078 | MATCH |
+| ORDERS | 99,441 | 99,441 | 99,441 | MATCH |
+| ORDER_ITEMS | 112,650 | 112,650 | 112,650 | MATCH |
+| ORDER_PAYMENTS | 103,886 | 103,886 | 103,886 | MATCH |
+| ORDER_REVIEWS | 99,224 | 99,224 | 99,224 | MATCH |
+| PRODUCTS | 32,951 | 32,951 | 32,951 | MATCH |
+| PRODUCT_CATEGORIES | 32,951 | 73 | 73 | MATCH |
+| SELLERS | 3,095 | 3,095 | 3,095 | MATCH |
 
-**Note:** Customer rows in the final table are deduplicated by `customer_unique_id`, so a different final count from the raw customer CSV is expected. Confirm these reference counts against your own imported files.
+**Result: 9/9 final-table counts match their transformation-aware expected counts.**
+
+**What the counts mean:**
+- **CUSTOMERS:** 99,441 raw customer rows reduce to 96,096 unique `customer_unique_id` records from the customer/order join, selecting the ZIP prefix from the most recent order.
+- **LOCATIONS:** 102,536 source customer/seller location observations (99,441 + 3,095) reduce to 15,078 unique ZIP prefixes; city/state values are selected by frequency.
+- **PRODUCT_CATEGORIES:** The source count is the 32,951 product records from which 73 distinct non-null Portuguese category names are extracted. It is *not* the row count of the separate translation CSV.
+- **Other tables:** The recorded load rules preserve one final row per applicable staging row (or joined source row for ORDERS).
+
+**Limitations:** Row-count agreement confirms cardinality, not that every source record has been mapped correctly or that values were transformed accurately. This table reports counts from the current staging data and final tables, not an independent comparison to the original CSV files. Do not sum source rows across these rows, because several derived tables reuse the same source datasets.
 
 ## 2. Primary keys and duplicates
 
