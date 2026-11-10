@@ -19,6 +19,12 @@ These visuals use results executed in Oracle SQL Developer and documented in the
 
 ![Top ten product categories ranked by delivered-order item-price sales](visualizations/top_categories.svg)
 
+### Monthly item-price sales trend
+
+![Monthly Olist item-price sales trend from September 2016 to September 2018](visualizations/monthly_sales.svg)
+
+*Q2 cross-check calculated from Olist source CSVs using the same SQL aggregation; compare against SQL Developer query output before marking verified.*
+
 ### Delivery timeliness and customer review scores
 
 ![Average customer review score for on-time and late delivered orders](visualizations/delivery_reviews.svg)
@@ -40,7 +46,7 @@ These visuals use results executed in Oracle SQL Developer and documented in the
 - [Entity relationship diagram](diagrams/ER_DIAGRAM.md) — GitHub-rendered Mermaid diagram based on the Oracle schema
 - [Findings report](results/FINDINGS_REPORT.md) — verified Q1, Q5 and Q6 results plus pending questions
 - [Data quality report](results/data_quality_report.md) — source-to-final reconciliation and integrity checks
-- [Charts](visualizations/) — SVG visualizations generated from verified SQL results
+- [Charts](visualizations/) — SVG visualizations from verified Q1/Q5/Q6 outputs and source-derived Q2 cross-check
 
 ## Repository structure
 
@@ -52,7 +58,7 @@ These visuals use results executed in Oracle SQL Developer and documented in the
 - `scripts/prepare_csv_for_oracle.py` — CSV cleanup utility
 - `diagrams/ER_DIAGRAM.md` — documented ER diagram
 - `results/` — verified findings and validation reporting
-- `visualizations/` — three charts based on verified Oracle query results
+- `visualizations/` — four charts; Q2 is independently source-derived pending Oracle screenshot reconciliation
 
 ## Running the Oracle version
 
