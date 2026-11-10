@@ -2,7 +2,7 @@
 
 **Project:** E-Commerce Orders Database & Customer Analytics  
 **Database:** Oracle Autonomous Database / SQL Developer  
-**Status:** All nine final-table counts verified against reference counts from the project owner's SQL Developer script output on November 10, 2026; all nine primary-key constraints and nine foreign-key constraints verified enabled and validated; all three orphan-record checks returned zero; missing-value checks pending documentation
+**Status:** All nine final-table counts verified against reference counts from the project owner's SQL Developer script output on November 10, 2026; all nine primary-key constraints and nine foreign-key constraints verified enabled and validated; all three orphan-record checks returned zero; order-field missing-value counts documented; review-score and delivery-status checks pending documentation
 
 ## Purpose
 
@@ -83,14 +83,16 @@ The reproducible checks are in [`oracle/04_data_validation.sql`](../oracle/04_da
 
 | Quality check | Actual result |
 |---|---:|
-| Orders missing customer ID | Pending |
-| Orders missing purchase timestamp | Pending |
-| Orders missing actual delivery timestamp | Pending |
-| Orders missing estimated delivery timestamp | Pending |
+| Orders missing customer ID | 0 |
+| Orders missing purchase timestamp | 0 |
+| Orders missing actual delivery timestamp | 2,965 |
+| Orders missing estimated delivery timestamp | 0 |
 | Reviews missing score | Pending |
 | Review scores outside 1–5 | Pending |
 
-Some missing delivery timestamps are legitimate for cancelled or undelivered orders. Report missingness by order status rather than treating all missing values as errors.
+**Order-field validation (November 10, 2026):** SQL Developer reported **99,441 total orders**, **0** missing customer IDs, **0** missing purchase timestamps, **2,965** missing actual delivery timestamps, and **0** missing estimated delivery timestamps. Thus **96,476** orders have a populated actual delivery timestamp, and the missing actual-delivery share is **2.98%** (2,965 / 99,441 × 100, rounded). These are observed missing values, not yet classified as data errors.
+
+Some missing delivery timestamps are legitimate for cancelled or undelivered orders. Report missingness by order status rather than treating all missing values as errors. The order-status breakdown of the 2,965 missing actual delivery timestamps remains **Pending**. Review-score checks also remain **Pending**.
 
 ## 5. Limitations
 
