@@ -2,13 +2,13 @@
 
 **Project:** E-Commerce Orders Database & Customer Analytics  
 **Database:** Oracle Autonomous Database / SQL Developer  
-**Status:** All nine final-table counts verified against reference counts from the project owner's SQL Developer script output on November 10, 2026; all nine primary-key constraints and nine foreign-key constraints verified enabled and validated; all three orphan-record checks returned zero; order-field missing-value counts documented; review-score minimum/maximum and missing count documented; review-score validation complete; delivery-status check pending
+**Status:** All nine final-table counts verified against reference counts from the project owner's SQL Developer script output on November 10, 2026; all nine primary-key constraints and nine foreign-key constraints verified enabled and validated; all three orphan-record checks returned zero; order-field missing-value counts documented; review-score minimum/maximum and missing count documented; review-score validation complete; delivery-status breakdown documented; 8 delivered-status orders missing delivery timestamps flagged for investigation
 
 ## Purpose
 
 Before drawing conclusions about customer satisfaction, late deliveries, and repeat purchases, check that the relational database loaded correctly and that important business fields are usable.
 
-The reproducible checks are in [`oracle/04_data_validation.sql`](../oracle/04_data_validation.sql). The row-count section records actual SQL Developer results supplied by the project owner on November 10, 2026. Primary-key, foreign-key, and orphan-record results are also verified from the project owner's SQL Developer screenshots. Missing-value and remaining checks are pending and should only be marked verified after their outputs are reviewed.
+The reproducible checks are in [`oracle/04_data_validation.sql`](../oracle/04_data_validation.sql). The row-count section records actual SQL Developer results supplied by the project owner on November 10, 2026. Primary-key, foreign-key, and orphan-record results are also verified from the project owner's SQL Developer screenshots. Missing-value and order-status results have also been verified from screenshots. The 8 delivered-status records with missing delivery timestamps remain a documented anomaly for investigation.
 
 ## 1. Row counts
 
@@ -94,7 +94,29 @@ The reproducible checks are in [`oracle/04_data_validation.sql`](../oracle/04_da
 
 **Review-score validation (November 10, 2026):** SQL Developer screenshot shows **99,224 total reviews**, **0 missing review scores**, minimum score **1**, and maximum score **5**. A separate SQL query confirmed **0 review scores outside 1–5**. Together with zero missing scores, this confirms all 99,224 review scores satisfy the expected range. Evidence: project owner's SQL Developer screenshot, November 10, 2026.
 
-Some missing delivery timestamps are legitimate for cancelled or undelivered orders. Report missingness by order status rather than treating all missing values as errors. The order-status breakdown of the 2,965 missing actual delivery timestamps remains **Pending**. Review-score checks also remain **Pending**.
+Some missing delivery timestamps are legitimate for cancelled or undelivered orders. Report missingness by order status rather than treating all missing values as errors. The order-status breakdown of all 2,965 missing actual delivery timestamps is documented below. Review-score range and null checks passed.
+
+
+
+### Missing delivery timestamps by order status (verified)
+
+| Order status | Total orders | Missing actual delivery timestamps |
+|---|---:|---:|
+| delivered | 96,478 | 8 |
+| shipped | 1,107 | 1,107 |
+| canceled | 625 | 619 |
+| unavailable | 609 | 609 |
+| invoiced | 314 | 314 |
+| processing | 301 | 301 |
+| created | 5 | 5 |
+| approved | 2 | 2 |
+| **TOTAL** | **99,441** | **2,965** |
+
+**Interpretation:** These counts reconcile exactly with the earlier missing-value query. Of the 2,965 missing delivery timestamps, **2,957** belong to orders whose status is not `delivered`; **8** belong to orders marked `delivered` and warrant investigation as possible status/timestamp inconsistencies. Six `canceled` orders have populated delivery timestamps (625 canceled minus 619 missing); investigate if relevant rather than assuming they are errors.
+
+**Analytical treatment:** For delivery-timeliness comparisons, use only orders with known actual and estimated delivery timestamps and clearly state whether analysis is limited to `delivered` status. Never impute missing dates as on-time or late. These are historical status records; a missing delivery date need not indicate an import failure.
+
+**Evidence:** Project owner's Oracle SQL Developer screenshot, November 10, 2026.
 
 ## 5. Limitations
 
@@ -106,6 +128,6 @@ Some missing delivery timestamps are legitimate for cancelled or undelivered ord
 ## 6. Next steps
 
 1. Run `oracle/04_data_validation.sql` using the project schema.
-2. Paste the actual numerical outputs into this report.
+2. Investigate the 8 delivered-status records with missing actual delivery timestamps, and any additional source-to-target discrepancies.
 3. Investigate any discrepancies.
 4. Record whether the database is ready for the ten business-analysis queries.
