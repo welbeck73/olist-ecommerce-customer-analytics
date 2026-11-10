@@ -1,6 +1,6 @@
 # Olist E-Commerce Customer Analytics — Findings Report
 
-**Status:** In progress. Q5 and Q6 results verified from Oracle SQL Developer screenshots dated November 10, 2026. Other business-query results remain pending.
+**Status:** In progress. Q1, Q5, and Q6 results verified from Oracle SQL Developer screenshots dated November 10, 2026. Other business-query results remain pending.
 
 ## Objective
 
@@ -58,11 +58,37 @@ Explore whether late delivery is associated with lower customer review scores an
 
 
 
+## Q1 — Top Product Categories by Merchandise Sales
+
+**Business question:** Which product categories have the highest item-price sales total among delivered orders?
+
+**Methodology:** Join `ORDER_ITEMS`, `ORDERS`, `PRODUCTS`, and `PRODUCT_CATEGORIES`. Restrict to orders whose status is `delivered`; group by translated product category; sum `ORDER_ITEMS.PRICE`; and count distinct orders per category. Rank by the sum of item prices and keep the top ten. Query: [Q1 in `oracle/04_queries.sql`](../oracle/04_queries.sql).
+
+| Rank | Product category | Item-price sales total | Distinct orders |
+|---:|---|---:|---:|
+| 1 | health_beauty | 1,233,131.72 | 8,647 |
+| 2 | watches_gifts | 1,166,176.98 | 5,495 |
+| 3 | bed_bath_table | 1,023,434.76 | 9,272 |
+| 4 | sports_leisure | 954,852.55 | 7,530 |
+| 5 | computers_accessories | 888,724.61 | 6,530 |
+| 6 | furniture_decor | 711,927.69 | 6,307 |
+| 7 | housewares | 615,628.69 | 5,743 |
+| 8 | cool_stuff | 610,204.10 | 3,559 |
+| 9 | auto | 578,966.65 | 3,810 |
+| 10 | toys | 471,286.48 | 3,804 |
+
+**Finding:** `health_beauty` has the largest item-price sales total, while `bed_bath_table` has more distinct orders (9,272 versus 8,647) but a smaller sales total. The category ranking therefore differs from a simple order-count ranking.
+
+**Business implication:** Category-level sales totals can help guide further investigation into merchandising, customer demand, and promotional opportunities. The descriptive ranking alone does not establish margins, conversion rates, or the effectiveness of promotions.
+
+**Limitations:** These values sum item prices only; freight, discounts, returns, fees, and costs are not comprehensively modeled. They are not net revenue, gross merchandise value including freight, or profit. One order containing multiple categories can appear in more than one category's distinct-order count. The query is restricted to orders labeled `delivered`, not all historical orders.
+
+**Verification:** Transcribed from the project owner's Oracle SQL Developer Q1 screenshot dated November 10, 2026.
+
 ## Other analyses
 
 | Query | Business question | Verified output |
 |---|---|---|
-| Q1 | Top categories by revenue | Pending |
 | Q2 | Monthly orders and revenue | Pending |
 | Q3 | Order status breakdown | Pending |
 | Q4 | Late delivery by state | Pending |
