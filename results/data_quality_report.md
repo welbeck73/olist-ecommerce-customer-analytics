@@ -2,13 +2,13 @@
 
 **Project:** E-Commerce Orders Database & Customer Analytics  
 **Database:** Oracle Autonomous Database / SQL Developer  
-**Status:** All nine final-table counts verified against reference counts from the project owner's SQL Developer script output on November 10, 2026; remaining integrity and missing-value checks pending documentation
+**Status:** All nine final-table counts verified against reference counts from the project owner's SQL Developer script output on November 10, 2026; all nine primary-key constraints verified enabled and validated; foreign-key, orphan, and missing-value checks pending documentation
 
 ## Purpose
 
 Before drawing conclusions about customer satisfaction, late deliveries, and repeat purchases, check that the relational database loaded correctly and that important business fields are usable.
 
-The reproducible checks are in [`oracle/04_data_validation.sql`](../oracle/04_data_validation.sql). The row-count section records actual SQL Developer results supplied by the project owner on November 10, 2026. Other checks remain pending and should only be marked verified after their outputs are reviewed.
+The reproducible checks are in [`oracle/04_data_validation.sql`](../oracle/04_data_validation.sql). The row-count section records actual SQL Developer results supplied by the project owner on November 10, 2026. Primary-key results are also verified from the project owner's SQL Developer screenshot. Other checks remain pending and should only be marked verified after their outputs are reviewed.
 
 ## 1. Row counts
 
@@ -24,15 +24,32 @@ The reproducible checks are in [`oracle/04_data_validation.sql`](../oracle/04_da
 | ORDER_PAYMENTS | 103,886 | 103,886 (source rows) | MATCH |
 | ORDER_REVIEWS | 99,224 | 99,224 (source rows) | MATCH |
 
-**Row-count result:** 9/9 final-table counts match the stated reference counts. This confirms counts, not full record-level correctness or completeness.\n\n**Note:** Customer rows in the final table are deduplicated by `customer_unique_id`, so a different final count from the raw customer CSV is expected. Confirm these reference counts against your own imported files.
+**Row-count result:** 9/9 final-table counts match the stated reference counts. This confirms counts, not full record-level correctness or completeness.
+
+**Note:** Customer rows in the final table are deduplicated by `customer_unique_id`, so a different final count from the raw customer CSV is expected. Confirm these reference counts against your own imported files.
 
 ## 2. Primary keys and duplicates
 
-Record whether all nine final tables have the required primary key constraints enabled and validated.
+**Primary-key validation: PASS (9/9).** SQL Developer results from November 10, 2026 show one primary-key constraint per final table. All nine constraints have `STATUS = ENABLED` and `VALIDATED = VALIDATED`.
 
-- Primary-key constraints: **Pending**
-- Duplicate `orders.order_id` groups: **Pending**
-- Findings: **Pending**
+| Final table | Primary-key column(s) | Status | Validation |
+|---|---|---|---|
+| CUSTOMERS | CUSTOMER_UNIQUE_ID | ENABLED | VALIDATED |
+| LOCATIONS | ZIP_PREFIX | ENABLED | VALIDATED |
+| ORDERS | ORDER_ID | ENABLED | VALIDATED |
+| ORDER_ITEMS | ORDER_ID, ORDER_ITEM_ID | ENABLED | VALIDATED |
+| ORDER_PAYMENTS | ORDER_ID, PAYMENT_SEQUENTIAL | ENABLED | VALIDATED |
+| ORDER_REVIEWS | REVIEW_KEY | ENABLED | VALIDATED |
+| PRODUCTS | PRODUCT_ID | ENABLED | VALIDATED |
+| PRODUCT_CATEGORIES | CATEGORY_NAME | ENABLED | VALIDATED |
+| SELLERS | SELLER_ID | ENABLED | VALIDATED |
+
+**Interpretation:** Oracle confirms that the declared primary-key constraints are enabled and validated, which enforces uniqueness and non-nullness of the listed primary-key columns. This does not establish that unrelated fields are free of duplicates or missing values.
+
+- Duplicate `orders.order_id` groups (separate explicit query): **Pending**
+- Foreign-key and orphan-record checks: **Pending**
+
+**Evidence:** Project owner's screenshot of SQL Developer query results, November 10, 2026.
 
 ## 3. Foreign keys and orphan rows
 
