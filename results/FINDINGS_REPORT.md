@@ -1,6 +1,6 @@
 # Olist E-Commerce Customer Analytics — Findings Report
 
-**Status:** Awaiting verified Oracle SQL Developer outputs. No results below should be interpreted as executed findings.
+**Status:** In progress. Q5 results verified from Oracle SQL Developer screenshot dated November 10, 2026. All other business-query results remain pending.
 
 ## Objective
 
@@ -8,28 +8,33 @@ Explore whether late delivery is associated with lower customer review scores an
 
 ## Reproducibility checklist
 
-- [ ] Run `01_schema.sql` and `02_staging_tables.sql`
-- [ ] Import all eight prepared CSV files into staging tables
-- [ ] Run `03_load.sql`; record row counts and errors
-- [ ] Check orphaned foreign keys and unexpected nulls
+- [x] Run `01_schema.sql` and `02_staging_tables.sql`
+- [x] Import eight prepared CSV datasets into staging tables (counts reconciled in the data quality report)
+- [x] Run `03_load.sql`; final-table row counts reconciled against staging-derived expectations
+- [x] Check orphaned foreign keys and unexpected nulls (see `data_quality_report.md`; eight delivered-status records missing delivery dates flagged)
 - [ ] Execute all ten queries from `04_queries.sql`
 - [ ] Export result CSVs and capture SQL Developer screenshots
 - [ ] Record the query date, Oracle version, and limitations
 
-## Q5: Late deliveries and review scores
+## Q5: Late deliveries and review scores — verified
 
-**Question:** Are reviews for late deliveries lower than reviews for on-time deliveries?
+**Question:** Are customer review scores lower for orders delivered later than their estimated delivery dates?
 
-**Method:** Join delivered orders with reviews; compare the delivery timestamp to the estimated delivery timestamp; aggregate review counts and mean scores by delivery category.
+**Method:** Analyze orders with `status = 'delivered'`, a non-null actual delivery timestamp, and a non-null estimated delivery timestamp. Aggregate any multiple reviews for the same order into one mean review score before comparing late versus on-time orders. SQL: [`oracle/04_queries.sql`](../oracle/04_queries.sql), Q5.
 
-| Delivery status | Review count | Average score |
+| Delivery status | Orders analyzed | Average review score (1–5) |
 |---|---:|---:|
-| On time | Pending | Pending |
-| Late | Pending | Pending |
+| Late | 7,661 | 2.57 |
+| On Time | 88,163 | 4.29 |
+| **Total** | **95,824** | **Not calculated in this query** |
 
-**Interpretation:** Pending verified results. A difference would show an association, not establish causality.
+**Finding:** The average score for on-time orders was **1.72 points higher** than for late orders (4.29 − 2.57, based on rounded group means). **7,661 / 95,824 ≈ 7.99%** of reviewed delivered orders in this comparison were late. This is an association; the analysis does **not** establish that late delivery causes lower review scores.
 
-**Limitations:** Review records may not be one-to-one with orders; late delivery may be correlated with seller, product, and location factors.
+**Scope:** Results exclude delivered orders without a usable actual delivery date, orders without a review, and non-delivered statuses. The denominator **95,824** is the population of reviewed delivered orders that met the query filters, not the entire orders dataset. An order with multiple review rows contributes one observation through its average review score.
+
+**Evidence:** Project owner's Oracle SQL Developer screenshot dated November 10, 2026; `Olist_Project` connection, `Q5.sql` worksheet. Values are rounded to two decimals by the executed query.
+
+**Potential business implication (hypothesis):** Improving delivery reliability may align with improved customer satisfaction. Further analysis should control for factors such as state, seller, and product category before making causal or predictive claims.
 
 ## Q6: Repeat customers
 
