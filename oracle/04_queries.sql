@@ -69,11 +69,22 @@ FROM delivery_analysis
 GROUP BY delivery_status
 ORDER BY delivery_status;
 
--- Q6. How many customers come back? (repeat purchase rate)
-SELECT COUNT(*) AS customers,
-       SUM(CASE WHEN n > 1 THEN 1 ELSE 0 END) AS repeat_customers,
-       ROUND(100.0 * SUM(CASE WHEN n > 1 THEN 1 ELSE 0 END) / COUNT(*), 2) AS repeat_pct
-FROM (SELECT customer_unique_id, COUNT(*) AS n FROM orders GROUP BY customer_unique_id) t;
+-- Q6. What fraction of unique customers placed more than one order?
+-- Observed repeat-purchase rate within the historical dataset, not lifetime retention.
+WITH customer_orders AS (
+    SELECT customer_unique_id,
+           COUNT(DISTINCT order_id) AS order_count
+    FROM orders
+    GROUP BY customer_unique_id
+)
+SELECT COUNT(*) AS total_customers,
+       SUM(CASE WHEN order_count > 1 THEN 1 ELSE 0 END) AS repeat_customers,
+       ROUND(
+           100.0 * SUM(CASE WHEN order_count > 1 THEN 1 ELSE 0 END)
+           / NULLIF(COUNT(*), 0),
+           2
+       ) AS repeat_customer_pct
+FROM customer_orders;
 
 -- Q7. Who are the top 10 sellers by revenue, and how are they reviewed?
 -- Revenue is summed in a subquery first so multiple reviews per order do not inflate it.
