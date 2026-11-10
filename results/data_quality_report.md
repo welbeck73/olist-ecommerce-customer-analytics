@@ -2,13 +2,13 @@
 
 **Project:** E-Commerce Orders Database & Customer Analytics  
 **Database:** Oracle Autonomous Database / SQL Developer  
-**Status:** All nine final-table counts verified against reference counts from the project owner's SQL Developer script output on November 10, 2026; all nine primary-key constraints verified enabled and validated; foreign-key, orphan, and missing-value checks pending documentation
+**Status:** All nine final-table counts verified against reference counts from the project owner's SQL Developer script output on November 10, 2026; all nine primary-key constraints and nine foreign-key constraints verified enabled and validated; all three orphan-record checks returned zero; missing-value checks pending documentation
 
 ## Purpose
 
 Before drawing conclusions about customer satisfaction, late deliveries, and repeat purchases, check that the relational database loaded correctly and that important business fields are usable.
 
-The reproducible checks are in [`oracle/04_data_validation.sql`](../oracle/04_data_validation.sql). The row-count section records actual SQL Developer results supplied by the project owner on November 10, 2026. Primary-key results are also verified from the project owner's SQL Developer screenshot. Other checks remain pending and should only be marked verified after their outputs are reviewed.
+The reproducible checks are in [`oracle/04_data_validation.sql`](../oracle/04_data_validation.sql). The row-count section records actual SQL Developer results supplied by the project owner on November 10, 2026. Primary-key, foreign-key, and orphan-record results are also verified from the project owner's SQL Developer screenshots. Missing-value and remaining checks are pending and should only be marked verified after their outputs are reviewed.
 
 ## 1. Row counts
 
@@ -47,19 +47,37 @@ The reproducible checks are in [`oracle/04_data_validation.sql`](../oracle/04_da
 **Interpretation:** Oracle confirms that the declared primary-key constraints are enabled and validated, which enforces uniqueness and non-nullness of the listed primary-key columns. This does not establish that unrelated fields are free of duplicates or missing values.
 
 - Duplicate `orders.order_id` groups: **0 — PASS** (verified from SQL Developer screenshot on November 10, 2026; query groups `ORDERS` by `ORDER_ID` and counts groups with more than one row).
-- Foreign-key and orphan-record checks: **Pending**
+- Foreign-key and orphan-record checks: **PASS** (see Section 3)
 
 **Evidence:** Project owner's screenshot of SQL Developer query results, November 10, 2026.
 
 ## 3. Foreign keys and orphan rows
 
-| Check | Actual count | Expected |
-|---|---:|---:|
-| Order items without matching order | Pending | 0 |
-| Order payments without matching order | Pending | 0 |
-| Order reviews without matching order | Pending | 0 |
+**Foreign-key validation: PASS (9/9).** Oracle SQL Developer reported nine foreign-key constraints, all `ENABLED` and `VALIDATED`, on November 10, 2026.
 
-List any missing or disabled constraints: **Pending**
+| Child table | Parent table | Status | Validation |
+|---|---|---|---|
+| CUSTOMERS | LOCATIONS | ENABLED | VALIDATED |
+| ORDERS | CUSTOMERS | ENABLED | VALIDATED |
+| ORDER_ITEMS | ORDERS | ENABLED | VALIDATED |
+| ORDER_ITEMS | PRODUCTS | ENABLED | VALIDATED |
+| ORDER_ITEMS | SELLERS | ENABLED | VALIDATED |
+| ORDER_PAYMENTS | ORDERS | ENABLED | VALIDATED |
+| ORDER_REVIEWS | ORDERS | ENABLED | VALIDATED |
+| PRODUCTS | PRODUCT_CATEGORIES | ENABLED | VALIDATED |
+| SELLERS | LOCATIONS | ENABLED | VALIDATED |
+
+**Orphan-record checks: PASS (3/3).** Separate left-join checks confirmed the following counts:
+
+| Check | Actual count | Expected | Result |
+|---|---:|---:|---|
+| Order items without matching order | 0 | 0 | PASS |
+| Order payments without matching order | 0 | 0 | PASS |
+| Order reviews without matching order | 0 | 0 | PASS |
+
+**Interpretation:** The displayed foreign-key constraints are enforced and validated, and no unmatched order references were found in these three child tables. This verifies referential integrity for the checked relationships, not full source-to-target record-level completeness.
+
+**Evidence:** SQL Developer screenshots supplied by the project owner, November 10, 2026.
 
 ## 4. Missing and invalid values
 
