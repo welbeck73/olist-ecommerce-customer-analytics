@@ -16,25 +16,27 @@ Explore whether late delivery is associated with lower customer review scores an
 - [ ] Export result CSVs and capture SQL Developer screenshots
 - [ ] Record the query date, Oracle version, and limitations
 
-## Q5: Late deliveries and review scores — verified
+## Q5 — Relationship Between Delivery Performance and Customer Satisfaction
 
-**Question:** Are customer review scores lower for orders delivered later than their estimated delivery dates?
+**Business Question:** Do orders delivered later than their estimated delivery dates receive lower customer review scores?
 
-**Method:** Analyze orders with `status = 'delivered'`, a non-null actual delivery timestamp, and a non-null estimated delivery timestamp. Aggregate any multiple reviews for the same order into one mean review score before comparing late versus on-time orders. SQL: [`oracle/04_queries.sql`](../oracle/04_queries.sql), Q5.
+**Methodology:** Using Oracle SQL, delivered orders were classified as either late or on time by comparing their actual delivery timestamps with their estimated delivery timestamps. Orders without the required delivery dates or customer reviews were excluded. For orders with multiple reviews, the review scores were averaged to ensure each order contributed only once to the analysis. The reproducible query is [Q5 in `oracle/04_queries.sql`](../oracle/04_queries.sql).
+
+**Results:** A total of **95,824 orders** were analyzed.
 
 | Delivery status | Orders analyzed | Average review score (1–5) |
 |---|---:|---:|
 | Late | 7,661 | 2.57 |
 | On Time | 88,163 | 4.29 |
-| **Total** | **95,824** | **1.72** |
+| **Total** | **95,824** | **Not calculated in this query** |
 
-**Finding:** The average score for on-time orders was **1.72 points higher** than for late orders (4.29 − 2.57, based on rounded group means). **7,661 / 95,824 ≈ 7.99%** of reviewed delivered orders in this comparison were late. This is an association; the analysis does **not** establish that late delivery causes lower review scores.
+**Key Finding:** On-time deliveries received an average review score **1.72 points higher** than late deliveries, based on the rounded group averages (**4.29 − 2.57 = 1.72**). Approximately **7.99%** of the included orders were late (**7,661 ÷ 95,824 × 100**).
 
-**Scope:** Results exclude delivered orders without a usable actual delivery date, orders without a review, and non-delivered statuses. The denominator **95,824** is the population of reviewed delivered orders that met the query filters, not the entire orders dataset. An order with multiple review rows contributes one observation through its average review score.
+**Business Implications:** The findings indicate a strong descriptive association between delivery timeliness and customer satisfaction. Delivery reliability may be an important area for e-commerce businesses to investigate when developing strategies to improve customer experience. Further analysis should account for other potential influences before attributing rating differences to delivery performance.
 
-**Evidence:** Project owner's Oracle SQL Developer screenshot dated November 10, 2026; `Olist_Project` connection, `Q5.sql` worksheet. Values are rounded to two decimals by the executed query.
+**Limitations:** This analysis demonstrates an association rather than a causal relationship. Other factors, including product quality, seller performance, and geographic location, may influence review scores. Additionally, the results apply only to reviewed, delivered orders with usable actual and estimated delivery timestamps. Multiple reviews for an order are averaged into one observation. The 1.72-point difference is calculated from group averages rounded to two decimals rather than from unrounded values.
 
-**Potential business implication (hypothesis):** Improving delivery reliability may align with improved customer satisfaction. Further analysis should control for factors such as state, seller, and product category before making causal or predictive claims.
+**Verification:** Results transcribed from the project owner's Oracle SQL Developer `Olist_Project` / `Q5.sql` screenshot dated November 10, 2026.
 
 ## Q6: Repeat customers
 
