@@ -43,18 +43,31 @@ GROUP BY l.state
 HAVING COUNT(*) >= 100
 ORDER BY late_pct DESC;
 
--- Q5. Do late deliveries get worse reviews? (the main story of the project)
-SELECT delivery,
-       COUNT(*) AS reviews,
-       ROUND(AVG(review_score), 2) AS avg_review
-FROM (
-    SELECT CASE WHEN o.delivered_customer_ts > o.estimated_delivery_ts THEN 'late' ELSE 'on time' END AS delivery,
-           r.review_score
+-- Q5. Are late deliveries associated with lower customer review scores?
+-- One observation per delivered order: average multiple reviews within an order first.
+-- Excludes orders missing actual or estimated delivery timestamps.
+WITH reviews_per_order AS (
+    SELECT order_id, AVG(review_score) AS avg_review_score
+    FROM order_reviews
+    GROUP BY order_id
+),
+delivery_analysis AS (
+    SELECT o.order_id,
+           CASE WHEN o.delivered_customer_ts > o.estimated_delivery_ts
+                THEN 'Late' ELSE 'On Time' END AS delivery_status,
+           r.avg_review_score
     FROM orders o
-    JOIN order_reviews r ON r.order_id = o.order_id
-    WHERE o.status = 'delivered' AND o.delivered_customer_ts IS NOT NULL
+    JOIN reviews_per_order r ON r.order_id = o.order_id
+    WHERE o.status = 'delivered'
+      AND o.delivered_customer_ts IS NOT NULL
+      AND o.estimated_delivery_ts IS NOT NULL
 )
-GROUP BY delivery;
+SELECT delivery_status,
+       COUNT(*) AS total_orders,
+       ROUND(AVG(avg_review_score), 2) AS avg_review_score
+FROM delivery_analysis
+GROUP BY delivery_status
+ORDER BY delivery_status;
 
 -- Q6. How many customers come back? (repeat purchase rate)
 SELECT COUNT(*) AS customers,
