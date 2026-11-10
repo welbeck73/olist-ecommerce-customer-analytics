@@ -2,29 +2,29 @@
 
 **Project:** E-Commerce Orders Database & Customer Analytics  
 **Database:** Oracle Autonomous Database / SQL Developer  
-**Status:** Validation run reported by project owner; results pending documentation and independent review
+**Status:** All nine final-table counts verified against reference counts from the project owner's SQL Developer script output on November 10, 2026; remaining integrity and missing-value checks pending documentation
 
 ## Purpose
 
 Before drawing conclusions about customer satisfaction, late deliveries, and repeat purchases, check that the relational database loaded correctly and that important business fields are usable.
 
-The reproducible checks are in [`oracle/04_data_validation.sql`](../oracle/04_data_validation.sql). This report must be filled with actual SQL Developer outputs; no result should be marked verified until confirmed.
+The reproducible checks are in [`oracle/04_data_validation.sql`](../oracle/04_data_validation.sql). The row-count section records actual SQL Developer results supplied by the project owner on November 10, 2026. Other checks remain pending and should only be marked verified after their outputs are reviewed.
 
 ## 1. Row counts
 
 | Final table | Actual rows | Source / expected rows | Status |
 |---|---:|---:|---|
-| LOCATIONS | Pending | 15,078 (previous reference) | Pending |
-| CUSTOMERS | Pending | 96,096 (previous reference) | Pending |
-| SELLERS | Pending | 3,095 (previous reference) | Pending |
-| PRODUCT_CATEGORIES | Pending | 73 (previous reference) | Pending |
-| PRODUCTS | Pending | 32,951 (previous reference) | Pending |
-| ORDERS | Pending | 99,441 (source rows) | Pending |
-| ORDER_ITEMS | Pending | 112,650 (source rows) | Pending |
-| ORDER_PAYMENTS | Pending | 103,886 (source rows) | Pending |
-| ORDER_REVIEWS | Pending | 99,224 (source rows) | Pending |
+| LOCATIONS | 15,078 | 15,078 (previous reference) | MATCH |
+| CUSTOMERS | 96,096 | 96,096 (previous reference) | MATCH |
+| SELLERS | 3,095 | 3,095 (previous reference) | MATCH |
+| PRODUCT_CATEGORIES | 73 | 73 (previous reference) | MATCH |
+| PRODUCTS | 32,951 | 32,951 (previous reference) | MATCH |
+| ORDERS | 99,441 | 99,441 (source rows) | MATCH |
+| ORDER_ITEMS | 112,650 | 112,650 (source rows) | MATCH |
+| ORDER_PAYMENTS | 103,886 | 103,886 (source rows) | MATCH |
+| ORDER_REVIEWS | 99,224 | 99,224 (source rows) | MATCH |
 
-**Note:** Customer rows in the final table are deduplicated by `customer_unique_id`, so a different final count from the raw customer CSV is expected. Confirm these reference counts against your own imported files.
+**Row-count result:** 9/9 final-table counts match the stated reference counts. This confirms counts, not full record-level correctness or completeness.\n\n**Note:** Customer rows in the final table are deduplicated by `customer_unique_id`, so a different final count from the raw customer CSV is expected. Confirm these reference counts against your own imported files.
 
 ## 2. Primary keys and duplicates
 
