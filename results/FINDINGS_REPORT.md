@@ -38,7 +38,6 @@ Explore whether late delivery is associated with lower customer review scores an
 
 **Limitations:** This analysis demonstrates an association rather than a causal relationship. Other factors, including product quality, seller performance, and geographic location, may influence review scores. Additionally, the results apply only to reviewed, delivered orders with usable actual and estimated delivery timestamps. Multiple reviews for an order are averaged into one observation. The 1.72-point difference is calculated from group averages rounded to two decimals rather than from unrounded values.
 
-**Verification:** Results transcribed from the project owner's Oracle SQL Developer `Olist_Project` / `Q5.sql` screenshot dated November 10, 2026.
 
 ## Q6 — Repeat Customer Behavior
 
@@ -58,7 +57,6 @@ Explore whether late delivery is associated with lower customer review scores an
 
 **Limitations:** This is the *observed repeat-purchase rate*, not a lifetime customer retention rate. The dataset has a limited historical window (2016–2018), and customers near the end of the period have less time to make another purchase. The measure counts orders, not purchased items, and does not establish why customers did or did not return.
 
-**Verification:** Values transcribed from the project owner's Oracle SQL Developer screenshot dated November 10, 2026; Q6 query results.
 
 
 
@@ -89,7 +87,6 @@ Explore whether late delivery is associated with lower customer review scores an
 
 **Limitations:** These values sum item prices only; freight, discounts, returns, fees, and costs are not comprehensively modeled. They are not net revenue, gross merchandise value including freight, or profit. One order containing multiple categories can appear in more than one category's distinct-order count. The query is restricted to orders labeled `delivered`, not all historical orders.
 
-**Verification:** Transcribed from the project owner's Oracle SQL Developer Q1 screenshot dated November 10, 2026.
 
 ## Q2 — Monthly Orders and Merchandise Sales (Source CSV Cross-check)
 
