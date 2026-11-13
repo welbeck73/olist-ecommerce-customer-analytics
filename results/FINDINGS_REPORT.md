@@ -1,6 +1,6 @@
 # Olist E-Commerce Customer Analytics — Findings Report
 
-**Progress:** Q1, Q2, Q3, Q5, and Q6 have been checked against Oracle outputs. Five questions remain in progress.
+**Progress:** Q1–Q6 have been checked against Oracle outputs. Four questions remain in progress (Q7–Q10).
 
 ## What I set out to learn
 
@@ -127,11 +127,53 @@ I wanted to see what the order data could tell me about customer experience and 
 
 **Limitations:** Order status is not a complete measure of successful delivery or fulfillment time. Earlier data-quality checks found **eight orders marked delivered with missing actual delivery timestamps**. I also can't infer whether orders in other statuses were eventually completed after the dataset ended.
 
+## Q4 — Where were late deliveries more common?
+
+**Question:** Which customer-location states had the highest share of late deliveries?
+
+**How I checked it:** I joined `ORDERS`, `CUSTOMERS`, and `LOCATIONS` and grouped the results by the state attached to each customer's retained ZIP prefix. I kept orders marked `delivered` with a recorded actual delivery timestamp, then calculated the percentage whose actual delivery date was later than the estimated date. The query includes only state groups with at least 100 eligible orders. I reviewed the Oracle SQL Developer output on November 13, 2026. The project query appears in [`oracle/04_queries.sql`](../oracle/04_queries.sql).
+
+![Late delivery percentages by customer-location state](../visualizations/late_deliveries_by_state.svg)
+
+[CSV of the 24 displayed state results](q4_late_delivery_by_state.csv)
+
+| State | Eligible delivered orders | Late (%) |
+|---|---:|---:|
+| AL | 397 | 23.9 |
+| MA | 720 | 19.6 |
+| PI | 476 | 16.0 |
+| CE | 1,281 | 15.3 |
+| SE | 336 | 15.2 |
+| BA | 3,254 | 14.0 |
+| RJ | 12,351 | 13.5 |
+| TO | 274 | 12.8 |
+| PA | 946 | 12.4 |
+| ES | 1,996 | 12.2 |
+| MS | 700 | 11.6 |
+| PE | 1,592 | 10.9 |
+| PB | 515 | 10.9 |
+| RN | 474 | 10.8 |
+| SC | 3,547 | 9.8 |
+| GO | 1,956 | 8.1 |
+| RS | 5,344 | 7.1 |
+| DF | 2,077 | 7.0 |
+| MT | 886 | 6.9 |
+| SP | 40,499 | 5.9 |
+| MG | 11,351 | 5.6 |
+| PR | 4,921 | 5.0 |
+| AM | 145 | 4.1 |
+| RO | 244 | 2.9 |
+
+**What I found:** Among the **24 states** meeting the minimum order count, Alagoas (AL) had the highest measured late-delivery rate at **23.9%** across **397** eligible orders, followed by Maranhão (MA) at **19.6%** and Piauí (PI) at **16.0%**. São Paulo (SP) had a **5.9%** rate across **40,499** eligible orders. These are descriptive differences, not proof of why delivery outcomes varied.
+
+**Why it matters:** The rate-based comparison shows which groups are worth investigating next. However, a state with a high percentage and a small number of orders may have fewer delayed orders overall than a more populous state with a lower rate. A follow-up analysis could compare both rates and counts, and check whether patterns vary by seller or delivery distance.
+
+**Limitations:** The normalized `CUSTOMERS` table retains one ZIP prefix per unique customer, chosen from their latest order. It cannot reliably recover the actual shipping state for each historical order, so **these are customer-location groupings, not exact order-destination results**. The analysis excludes orders not marked delivered, orders without an actual delivery timestamp, and groups with fewer than 100 eligible orders. Percentages are rounded to one decimal in the exported screenshot; exact late-order counts are not included in that output.
+
 ## Other analyses
 
 | Query | Business question | Verified output |
 |---|---|---|
-| Q4 | Late delivery by state | Pending |
 | Q7 | Top sellers and reviews | Pending |
 | Q8 | Payment mix | Pending |
 | Q9 | Average delivery time by state | Pending |
