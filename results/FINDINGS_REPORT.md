@@ -30,7 +30,7 @@ I wanted to see what the order data could tell me about customer experience and 
 |---|---:|---:|
 | Late | 7,661 | 2.57 |
 | On Time | 88,163 | 4.29 |
-| **Total** | **95,824** | **Not calculated in this query** |
+| **Total** | **95,824** | **-** |
 
 **What I found:** On-time deliveries received an average review score **1.72 points higher** than late deliveries, based on the rounded group averages (**4.29 − 2.57 = 1.72**). Approximately **7.99%** of the included orders were late (**7,661 ÷ 95,824 × 100**).
 
