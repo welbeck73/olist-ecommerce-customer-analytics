@@ -40,6 +40,8 @@ The detailed query outputs, methods, and caveats are in the [findings report](re
 
 ![Order statuses and their share of all Olist orders](visualizations/order_status.svg)
 
+[Explore the interactive order-status chart](https://welbeck73.github.io/olist-ecommerce-customer-analytics/) *(GitHub Pages must be enabled for the site to open).*
+
 ### Delivery time and review scores
 
 ![Average review score for late and on-time deliveries](visualizations/delivery_reviews.svg)
