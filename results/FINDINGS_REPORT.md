@@ -1,6 +1,6 @@
 # Olist E-Commerce Customer Analytics — Findings Report
 
-**Progress:** Q1–Q9 have been checked against Oracle outputs. Q10 is still pending.
+**Progress:** Q1–Q9 have been checked against Oracle outputs. The original Q10 query ran successfully, but its item-weighted review calculation is being checked with a corrected order-level query before Q10 is marked complete.
 
 ## What I set out to learn
 
@@ -269,11 +269,38 @@ I wanted to see what the order data could tell me about customer experience and 
 
 **Limitations:** The customer table retains a single ZIP prefix for each unique customer, so this is not a reliable per-order historical destination-state analysis. The calculated time runs from purchase to delivery, not solely from shipping to delivery. States with fewer than 100 qualifying orders and orders missing delivery dates are excluded. The displayed averages are rounded to one decimal place and do not show the distribution or variability of delivery times within each state.
 
+## Q10 — Which categories received the lowest review scores? (verification in progress)
+
+**Question:** Which product categories are associated with the lowest customer review scores?
+
+**Initial Oracle result:** I ran the original query on November 13, 2026. It joined order items to reviews, grouped by category, and returned the ten lowest averages among groups with at least 100 joined item-review rows. Those initial outputs are preserved here, but the averages can be affected by orders containing multiple items or multiple reviews.
+
+[Initial Q10 output CSV](q10_categories_initial.csv)
+
+| Category | Joined item-review rows | Initial average review |
+|---|---:|---:|
+| office_furniture | 1,687 | 3.49 |
+| fashion_male_clothing | 131 | 3.64 |
+| fixed_telephony | 262 | 3.68 |
+| audio | 361 | 3.83 |
+| home_confort | 435 | 3.83 |
+| unknown | 1,598 | 3.84 |
+| construction_tools_safety | 193 | 3.84 |
+| bed_bath_table | 11,137 | 3.90 |
+| furniture_living_room | 502 | 3.90 |
+| furniture_decor | 8,331 | 3.90 |
+
+**Initial observation:** `office_furniture` has the lowest average in the original query (**3.49/5**), but I am not treating the ranking as final until the review-weighting issue is addressed.
+
+**Correction to verify:** I updated [Q10 in `oracle/04_queries.sql`](../oracle/04_queries.sql) to average any multiple reviews for an order first, keep each order/category pair once, and compare categories with at least 100 reviewed orders. This changes the unit of analysis from joined item-review rows to reviewed orders associated with a category. **The revised result has not yet been executed and verified in Oracle.**
+
+**Limitations:** Customer review scores belong to whole orders rather than individual products. Orders containing multiple categories can contribute their review to each category, so the results are associations rather than product-specific ratings. The `unknown` category includes products without a mapped category label.
+
 ## Other analyses
 
 | Query | Business question | Verified output |
 |---|---|---|
-| Q10 | Lowest-rated categories | Pending |
+| Q10 | Lowest-rated categories | Initial results recorded; corrected analysis pending |
 
 ## What I would investigate next
 
