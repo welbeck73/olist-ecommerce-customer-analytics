@@ -28,6 +28,8 @@ The dataset covers Brazilian online orders from 2016 to 2018. I started this as 
 
 **Top sellers.** The leading seller recorded **BRL 226,987.93** in item-price sales across **1,124** delivered orders, with an average review score of **4.15** across **1,116** reviewed orders. Among the ten highest-selling sellers, the fourth-ranked seller had the highest average review score (**4.37**). Ratings are associated with orders involving each seller and may reflect other sellers in the same order.
 
+**Payment methods.** Credit cards accounted for **78.34%** of recorded payment value (BRL 12,542,084.19), followed by boleto at **17.92%**. These are shares of payment value, not shares of customers or unique orders.
+
 The detailed query outputs, methods, and caveats are in the [findings report](results/FINDINGS_REPORT.md).
 
 ## Visualizations
@@ -52,6 +54,10 @@ The detailed query outputs, methods, and caveats are in the [findings report](re
 ### Top sellers by merchandise sales
 
 ![Ten leading sellers ranked by delivered-order item-price sales](visualizations/top_sellers.svg)
+
+### Payment methods
+
+![Q8 payment value distribution across methods](visualizations/payment_methods.svg)
 
 ### Delivery time and review scores
 
