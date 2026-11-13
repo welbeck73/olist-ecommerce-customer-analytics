@@ -50,7 +50,6 @@ The detailed query outputs, methods, and caveats are in the [findings report](re
 
 ![Order statuses and their share of all Olist orders](visualizations/order_status.svg)
 
-
 ### Late-delivery rates by customer state
 
 ![Q4 late-delivery percentages across the 24 qualifying Brazilian states](visualizations/late_deliveries_by_state.svg)
@@ -79,6 +78,10 @@ The detailed query outputs, methods, and caveats are in the [findings report](re
 
 ![Share of unique customers with more than one order](visualizations/repeat_purchases.svg)
 
+## Next: Understanding SQL query performance
+
+I am now investigating how Oracle chooses execution plans for monthly sales queries. The [Phase 6 experiment](results/PERFORMANCE_EXPERIMENT.md) compares two equivalent date filters before making any new index changes. Results are pending, so I am not claiming a performance improvement yet.
+
 ## How I built the database
 
 I created a nine-table relational model for customers, locations, sellers, products, product categories, orders, order items, payments, and reviews. The source CSVs were imported into staging tables first. From there, SQL transformations loaded the final tables and handled details such as unique customers and ZIP-code prefixes.
@@ -98,6 +101,8 @@ See the [ER diagram](diagrams/ER_DIAGRAM.md) and [data quality report](results/d
 | [`oracle/03_load.sql`](oracle/03_load.sql) | Load and transform the source data |
 | [`oracle/04_data_validation.sql`](oracle/04_data_validation.sql) | Check counts, constraints, duplicates, and missing values |
 | [`oracle/04_queries.sql`](oracle/04_queries.sql) | Ten business questions written in SQL |
+| [`oracle/05_performance_baseline.sql`](oracle/05_performance_baseline.sql) | Read-only query-plan experiment (Phase 6) |
+| [`results/PERFORMANCE_EXPERIMENT.md`](results/PERFORMANCE_EXPERIMENT.md) | Performance experiment protocol and pending results |
 | [`scripts/prepare_csv_for_oracle.py`](scripts/prepare_csv_for_oracle.py) | Prepare CSVs for Oracle import |
 | [`results/FINDINGS_REPORT.md`](results/FINDINGS_REPORT.md) | Results and interpretation |
 | [`results/data_quality_report.md`](results/data_quality_report.md) | Data checks and issues identified |
