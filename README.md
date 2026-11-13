@@ -32,6 +32,8 @@ The dataset covers Brazilian online orders from 2016 to 2018. I started this as 
 
 **Delivery duration by state.** Amazonas (AM) had the longest average purchase-to-delivery time (**26.4 days**) among states with at least 100 eligible delivered orders; São Paulo (SP) had the shortest (**8.8 days**). State groupings reflect each customer's retained ZIP prefix, not necessarily each order's original shipping address.
 
+**Lowest-rated categories (Q10, under review).** The initial query put office furniture at an average review score of **3.49/5**, but I am checking the ranking with an order-level calculation before reporting it as a final finding.
+
 The detailed query outputs, methods, and caveats are in the [findings report](results/FINDINGS_REPORT.md).
 
 ## Visualizations
