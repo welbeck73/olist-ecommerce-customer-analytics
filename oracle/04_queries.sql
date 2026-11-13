@@ -150,16 +150,30 @@ GROUP BY l.state
 HAVING COUNT(*) >= 100
 ORDER BY avg_days DESC;
 
--- Q10. Which categories are reviewed worst? (at least 100 reviewed items)
--- Note: one row per order item, so an order with several items counts once per item.
-SELECT COALESCE(pc.category_name_en, p.category_name, 'unknown') AS category,
-       COUNT(*) AS reviewed_items,
-       ROUND(AVG(r.review_score), 2) AS avg_review
-FROM order_items oi
-JOIN order_reviews r ON r.order_id = oi.order_id
-JOIN products p      ON p.product_id = oi.product_id
-LEFT JOIN product_categories pc ON pc.category_name = p.category_name
-GROUP BY COALESCE(pc.category_name_en, p.category_name, 'unknown')
+-- Q10. Which product categories have the lowest average order-review scores?
+-- One observation per distinct order/category combination.
+-- Multiple reviews on the same order are averaged before category analysis.
+-- The review concerns the whole order, not necessarily a specific product.
+WITH order_reviews_one_row AS (
+    SELECT order_id,
+           AVG(review_score) AS order_avg_review
+    FROM order_reviews
+    GROUP BY order_id
+),
+order_categories AS (
+    SELECT DISTINCT
+           oi.order_id,
+           COALESCE(pc.category_name_en, p.category_name, 'unknown') AS category
+    FROM order_items oi
+    JOIN products p ON p.product_id = oi.product_id
+    LEFT JOIN product_categories pc ON pc.category_name = p.category_name
+)
+SELECT oc.category,
+       COUNT(*) AS reviewed_orders,
+       ROUND(AVG(r.order_avg_review), 2) AS avg_review
+FROM order_categories oc
+JOIN order_reviews_one_row r ON r.order_id = oc.order_id
+GROUP BY oc.category
 HAVING COUNT(*) >= 100
-ORDER BY avg_review ASC
+ORDER BY avg_review ASC, reviewed_orders DESC, oc.category
 FETCH FIRST 10 ROWS ONLY;
