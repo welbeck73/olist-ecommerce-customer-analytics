@@ -26,6 +26,8 @@ The dataset covers Brazilian online orders from 2016 to 2018. I started this as 
 
 **Late deliveries by state.** Alagoas (AL) had the highest late-delivery rate in the Q4 analysis (**23.9%**) among customer-location states with at least 100 delivered orders and recorded delivery dates. These state assignments use each customer's retained ZIP prefix and may not match the address on every order.
 
+**Top sellers (Q7, initial results).** The highest-ranked seller recorded **BRL 226,987.93** in delivered-order item-price sales across **1,124** orders. I am rechecking the review-score calculation so each reviewed order receives equal weight before treating seller ratings as final.
+
 The detailed query outputs, methods, and caveats are in the [findings report](results/FINDINGS_REPORT.md).
 
 ## Visualizations
@@ -46,6 +48,10 @@ The detailed query outputs, methods, and caveats are in the [findings report](re
 ### Late-delivery rates by customer state
 
 ![Q4 late-delivery percentages across the 24 qualifying Brazilian states](visualizations/late_deliveries_by_state.svg)
+
+### Top sellers by merchandise sales
+
+![Ten leading sellers ranked by delivered-order item-price sales](visualizations/top_sellers.svg)
 
 ### Delivery time and review scores
 
