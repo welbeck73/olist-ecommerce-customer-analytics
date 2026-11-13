@@ -56,7 +56,9 @@ This demonstrates the optimizer's **estimated** choice for the TRUNC-based filte
 
 **Comparison:** Both plans have the same plan hash (`3479646620`) and use full scans of both tables with a hash join. The estimated statement cost is 1,029 for the TRUNC version and 1,026 for the range version, a difference of `(1029 - 1026) / 1029 × 100 ≈ 0.29%`. The estimated filtered `ORDERS` row count changes from 994 to 7,622, despite the calendar-month predicates being semantically equivalent. The screenshot does not establish why these estimates differ.
 
-**Still pending:** Execute the actual SELECTs to confirm equal order counts and item-price sales, then collect repeatable runtime measurements if practical. No actual speedup has been demonstrated.
+**Result consistency verified (November 13, 2026):** The two SELECTs were executed together with `UNION ALL` in Oracle SQL Developer. Each independently returned **7,451 distinct orders** and **BRL 1,010,271.37** in item-price sales for November 2017. The filters therefore returned matching aggregate results on the current database. The SQL Developer grid displayed “2 rows in 0.11 seconds”; that is a combined fetch measurement, not separate query runtimes.
+
+**Still pending:** Independently measure repeated executions for Test A and Test B under comparable conditions. No actual speedup has been demonstrated.
 
 ## Notes and limitations
 
