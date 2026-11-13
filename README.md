@@ -1,80 +1,87 @@
-# Olist E-Commerce Orders Database & Customer Analytics
+# Olist E-Commerce Database & Customer Analytics
 
-**Status: SQL database and validation complete; business analysis in progress | Oracle SQL Developer · SQL · Relational Data Modeling**
+This project looks at how delivery performance, customer purchasing habits, and product sales shape the online shopping experience. Using the Olist Brazilian E-Commerce dataset, I built a relational database in Oracle, cleaned and checked the data, and wrote SQL queries to answer practical business questions. I also used Python to check query results and create charts that make the findings easier to follow.
 
-A database management and analytics portfolio project using the [Brazilian E-Commerce Public Dataset by Olist](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce), covering approximately 100,000 orders from 2016–2018.
+The dataset covers Brazilian online orders from 2016 to 2018. I started this as a Database Management Systems project and am extending it into a data analytics portfolio project. The Oracle database and planned data-quality checks are complete; the business analysis is still in progress.
 
-## Business questions
+## What I wanted to find out
 
-- Do late deliveries receive lower customer review scores?
-- How often do customers make repeat purchases?
-- Which product categories generate the most revenue?
-- How do delivery performance and satisfaction vary across regions?
+- Do orders delivered after their estimated date receive lower review scores?
+- How often do customers place another order?
+- Which product categories account for the most merchandise sales?
+- How do order volume and sales change over time?
+- Where do delivery outcomes differ across regions? *(analysis in progress)*
 
-## Verified findings and visualizations
+## Findings so far
 
-These visuals use results executed in Oracle SQL Developer and documented in the [findings report](results/FINDINGS_REPORT.md). They are descriptive analyses of the historical Olist data, not causal or predictive estimates.
+**Late deliveries and reviews.** The 7,661 late orders in the reviewed-delivery sample received an average score of **2.57/5**, compared with **4.29/5** for 88,163 on-time orders. That's a **1.72-point gap** using the rounded averages. The difference is an association, not proof that delays caused lower scores.
 
-### Top product categories by item-price sales
+**Repeat purchases.** Out of **96,096** unique customers in the orders data, **2,997** placed more than one order (**3.12%**). This is the observed repeat-purchase rate during the dataset's time window, not a lifetime retention rate.
 
-![Top ten product categories ranked by delivered-order item-price sales](visualizations/top_categories.svg)
+**Product category sales.** **Health & Beauty** led delivered-order merchandise sales with **BRL 1,233,131.72** in item prices. Bed, Bath & Table had more distinct orders than Health & Beauty but a smaller sales total. These totals exclude freight and do not represent profit.
 
-### Monthly item-price sales trend
+**Monthly sales.** November 2017 had the highest monthly item-price sales in Q2: **BRL 1,010,271.37** across **7,451** orders. I compared all 24 monthly rows from Oracle with the chart dataset in Python; the comparison passed.
 
-![Monthly Olist item-price sales trend from September 2016 to September 2018](visualizations/monthly_sales.svg)
+The detailed query outputs, methods, and caveats are in the [findings report](results/FINDINGS_REPORT.md).
 
-*Q2 cross-check calculated from Olist source CSVs using the same SQL aggregation; compare against SQL Developer query output before marking verified.*
+## Visualizations
 
-### Delivery timeliness and customer review scores
+### Product category sales
 
-![Average customer review score for on-time and late delivered orders](visualizations/delivery_reviews.svg)
+![Top ten product categories by item-price sales for delivered orders](visualizations/top_categories.svg)
 
-### Observed repeat-purchase rate
+### Monthly merchandise sales
 
-![3.12 percent of unique customers placed more than one order](visualizations/repeat_purchases.svg)
+![Olist monthly item-price sales, 2016–2018](visualizations/monthly_sales.svg)
 
-## Project approach
+### Delivery time and review scores
 
-1. Design an entity-relationship diagram and normalized (3NF) Oracle schema.
-2. Prepare source CSVs and import them into staging tables.
-3. Transform and validate data in relational tables.
-4. Run documented SQL queries to investigate customer and delivery outcomes.
-5. Summarize results, limitations, and business recommendations.
+![Average review score for late and on-time deliveries](visualizations/delivery_reviews.svg)
 
-## Portfolio artifacts
+### Repeat purchases
 
-- [Entity relationship diagram](diagrams/ER_DIAGRAM.md) — GitHub-rendered Mermaid diagram based on the Oracle schema
-- [Findings report](results/FINDINGS_REPORT.md) — verified Q1, Q5 and Q6 results plus pending questions
-- [Data quality report](results/data_quality_report.md) — source-to-final reconciliation and integrity checks
-- [Charts](visualizations/) — SVG visualizations from verified Q1/Q5/Q6 outputs and source-derived Q2 cross-check
+![Share of unique customers with more than one order](visualizations/repeat_purchases.svg)
 
-## Repository structure
+## How I built the database
 
-- `oracle/01_schema.sql` — relational tables, keys, and indexes
-- `oracle/02_staging_tables.sql` — CSV import staging tables
-- `oracle/03_load.sql` — transformation and loading queries
-- `oracle/04_queries.sql` — ten business analysis queries
-- `oracle/04_data_validation.sql` — reproducible validation queries
-- `scripts/prepare_csv_for_oracle.py` — CSV cleanup utility
-- `diagrams/ER_DIAGRAM.md` — documented ER diagram
-- `results/` — verified findings and validation reporting
-- `visualizations/` — four charts; Q2 is independently source-derived pending Oracle screenshot reconciliation
+I created a nine-table relational model for customers, locations, sellers, products, product categories, orders, order items, payments, and reviews. The source CSVs were imported into staging tables first. From there, SQL transformations loaded the final tables and handled details such as unique customers and ZIP-code prefixes.
 
-## Running the Oracle version
+I checked the resulting tables before starting the analysis. All **nine** final-table counts matched the expected counts calculated from the staging data. Oracle also reported **nine enabled and validated primary keys** and **nine enabled and validated foreign keys**. The additional checks found no duplicate order IDs, no orphan order items/payments/reviews, and no review scores outside the 1–5 range.
 
-1. Download the dataset from the Kaggle link above. The raw datasets are not included in this repository.
-2. Place the eight required CSV files in `data/` (geolocation is not required).
-3. Run `python scripts/prepare_csv_for_oracle.py` after installing pandas.
-4. Run `oracle/01_schema.sql`, then `oracle/02_staging_tables.sql` in Oracle SQL Developer.
-5. Import the prepared CSV files from `data/oracle/` into the corresponding staging tables using SQL Developer's Import Data wizard.
-6. Run `oracle/03_load.sql`, inspect row counts, and then execute queries in `oracle/04_queries.sql`.
+One issue remains documented: **eight orders marked as delivered have no actual delivery timestamp**. I excluded records without the required timestamps from delivery-timeliness comparisons rather than treating them as on-time or late.
 
-**Validation note:** The project owner successfully executed the Oracle load and validation checks. Actual final-table counts match staging-derived expectations for all nine tables; nine primary keys and nine foreign keys are enabled and validated. Eight delivered-status orders have missing actual delivery timestamps and remain documented as a data quality caveat. See [data quality report](results/data_quality_report.md).
+See the [ER diagram](diagrams/ER_DIAGRAM.md) and [data quality report](results/data_quality_report.md) for the design and validation details.
 
-## Skills demonstrated
+## Tools and project files
 
-SQL joins, aggregations, window functions, data normalization, ER modeling, data preparation, customer analytics, and business storytelling.
+| File or folder | Purpose |
+|---|---|
+| [`oracle/01_schema.sql`](oracle/01_schema.sql) | Final tables, keys, and indexes |
+| [`oracle/02_staging_tables.sql`](oracle/02_staging_tables.sql) | Raw-data staging tables |
+| [`oracle/03_load.sql`](oracle/03_load.sql) | Load and transform the source data |
+| [`oracle/04_data_validation.sql`](oracle/04_data_validation.sql) | Check counts, constraints, duplicates, and missing values |
+| [`oracle/04_queries.sql`](oracle/04_queries.sql) | Ten business questions written in SQL |
+| [`scripts/prepare_csv_for_oracle.py`](scripts/prepare_csv_for_oracle.py) | Prepare CSVs for Oracle import |
+| [`results/FINDINGS_REPORT.md`](results/FINDINGS_REPORT.md) | Results and interpretation |
+| [`results/data_quality_report.md`](results/data_quality_report.md) | Data checks and issues identified |
+| [`visualizations/`](visualizations/) | Charts based on query results |
+| [`diagrams/ER_DIAGRAM.md`](diagrams/ER_DIAGRAM.md) | Entity-relationship diagram |
 
-## Data attribution
+**Tools:** Oracle Autonomous Database, Oracle SQL Developer, SQL, Python (pandas and Matplotlib), and GitHub.
 
-Dataset: [Olist Brazilian E-Commerce Public Dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce). Check the dataset's license before redistributing data.
+## Reproducing the database
+
+1. Download the [Olist Brazilian E-Commerce dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce). This repository does not include the raw data.
+2. Put the eight CSVs used in this project into `data/` and prepare them with `scripts/prepare_csv_for_oracle.py` (requires pandas).
+3. In your own Oracle database/schema, run `oracle/01_schema.sql` followed by `oracle/02_staging_tables.sql`. **These setup scripts drop and recreate tables, so do not run them against a schema containing data you want to keep.**
+4. Import the prepared CSVs into the matching staging tables using SQL Developer.
+5. Run `oracle/03_load.sql` and then `oracle/04_data_validation.sql`.
+6. Run the analyses in `oracle/04_queries.sql`. Compare the results with the reports and charts in this repository.
+
+## Scope and limitations
+
+This is a historical, single-marketplace dataset rather than live retail data. Item-price sales exclude freight and costs. The customer table retains one ZIP prefix per unique customer, so state-level analysis cannot always recover the address associated with each individual order. Some orders have incomplete delivery information. These limitations matter when interpreting the results.
+
+## Data source
+
+[Olist Brazilian E-Commerce Public Dataset (Kaggle)](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce). The original data remains attributed to its publisher.
