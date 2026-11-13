@@ -86,13 +86,10 @@ SELECT COUNT(*) AS total_customers,
        ) AS repeat_customer_pct
 FROM customer_orders;
 
--- Q7. Who are the top 10 sellers by revenue, and how are they reviewed?
--- Revenue is summed in a subquery first so multiple reviews per order do not inflate it.
-SELECT s.seller_id,
-       s.revenue,
-       s.orders,
-       ROUND(AVG(r.review_score), 2) AS avg_review
-FROM (
+-- Q7. Which 10 sellers have the highest delivered-order item-price sales?
+-- Review scores are calculated once per order before averaging by seller.
+-- An order involving several sellers can contribute its review to each seller.
+WITH seller_sales AS (
     SELECT oi.seller_id,
            ROUND(SUM(oi.price), 2) AS revenue,
            COUNT(DISTINCT oi.order_id) AS orders
@@ -100,13 +97,36 @@ FROM (
     JOIN orders o ON o.order_id = oi.order_id
     WHERE o.status = 'delivered'
     GROUP BY oi.seller_id
+),
+top_sellers AS (
+    SELECT seller_id, revenue, orders
+    FROM seller_sales
     ORDER BY revenue DESC
     FETCH FIRST 10 ROWS ONLY
-) s
-LEFT JOIN order_items oi2 ON oi2.seller_id = s.seller_id
-LEFT JOIN order_reviews r ON r.order_id = oi2.order_id
-GROUP BY s.seller_id, s.revenue, s.orders
-ORDER BY s.revenue DESC;
+),
+reviews_per_order AS (
+    SELECT order_id,
+           AVG(review_score) AS avg_review_score
+    FROM order_reviews
+    GROUP BY order_id
+),
+seller_orders AS (
+    SELECT DISTINCT oi.seller_id, oi.order_id
+    FROM order_items oi
+    JOIN orders o ON o.order_id = oi.order_id
+    JOIN top_sellers ts ON ts.seller_id = oi.seller_id
+    WHERE o.status = 'delivered'
+)
+SELECT ts.seller_id,
+       ts.revenue,
+       ts.orders,
+       COUNT(r.avg_review_score) AS reviewed_orders,
+       ROUND(AVG(r.avg_review_score), 2) AS avg_review
+FROM top_sellers ts
+LEFT JOIN seller_orders so ON so.seller_id = ts.seller_id
+LEFT JOIN reviews_per_order r ON r.order_id = so.order_id
+GROUP BY ts.seller_id, ts.revenue, ts.orders
+ORDER BY ts.revenue DESC;
 
 -- Q8. How do customers pay? (window function for the share of total)
 SELECT payment_type,
