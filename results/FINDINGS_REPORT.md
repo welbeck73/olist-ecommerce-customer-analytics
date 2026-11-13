@@ -1,6 +1,6 @@
 # Olist E-Commerce Customer Analytics — Findings Report
 
-**Progress:** Q1–Q8 have been checked against Oracle outputs. Q9 and Q10 are still pending.
+**Progress:** Q1–Q9 have been checked against Oracle outputs. Q10 is still pending.
 
 ## What I set out to learn
 
@@ -226,11 +226,53 @@ I wanted to see what the order data could tell me about customer experience and 
 
 **Limitations:** The percentages represent **payment value**, not the percentage of shoppers or orders. An order can have more than one payment record or payment method, so distinct order counts across categories should not be summed as a grand total. Payment value may include components outside merchandise item price, and it should not be interpreted as net profit. The displayed shares round to 99.99% rather than exactly 100% because of rounding.
 
+## Q9 — How long did delivery take by state?
+
+**Question:** How did average purchase-to-delivery times differ across customer-location states?
+
+**How I checked it:** I joined `ORDERS`, `CUSTOMERS`, and `LOCATIONS` and calculated the elapsed days between each order's purchase and recorded customer-delivery timestamp using Oracle's date subtraction. I kept delivered orders with both timestamps and state groups with at least 100 eligible orders. I reviewed the 24-row result in Oracle SQL Developer on November 13, 2026. The analysis SQL is in [`oracle/04_queries.sql`](../oracle/04_queries.sql).
+
+![Average delivery time by customer-location state](../visualizations/delivery_time_by_state.svg)
+
+[Download the Q9 results CSV](q9_delivery_time_by_state.csv)
+
+| State | Eligible delivered orders | Average delivery days |
+|---|---:|---:|
+| AM | 145 | 26.4 |
+| AL | 397 | 24.5 |
+| PA | 946 | 23.8 |
+| MA | 720 | 21.5 |
+| SE | 336 | 21.5 |
+| CE | 1,281 | 21.3 |
+| PB | 515 | 20.4 |
+| PI | 476 | 19.5 |
+| RO | 244 | 19.4 |
+| BA | 3,254 | 19.3 |
+| RN | 474 | 19.3 |
+| PE | 1,592 | 18.4 |
+| MT | 886 | 18.1 |
+| TO | 274 | 17.7 |
+| ES | 1,996 | 15.8 |
+| GO | 1,956 | 15.6 |
+| MS | 700 | 15.6 |
+| RJ | 12,351 | 15.3 |
+| RS | 5,344 | 15.3 |
+| SC | 3,547 | 14.9 |
+| DF | 2,077 | 13.0 |
+| MG | 11,351 | 12.0 |
+| PR | 4,921 | 12.0 |
+| SP | 40,499 | 8.8 |
+
+**What I found:** Amazonas (AM) recorded the longest mean time at **26.4 days** across **145** eligible orders, followed by Alagoas (AL) at **24.5 days** and Pará (PA) at **23.8 days**. São Paulo (SP) recorded the shortest average at **8.8 days** across **40,499** eligible orders. The displayed means differ by **17.6 days** between AM and SP. The 24 state order counts sum to **96,282**, consistent with the Q4 state-level query's included orders.
+
+**Why it matters:** Delivery times vary considerably among the included customer-location groups. I would compare the differences with late-delivery rates and order volumes before deciding which regions deserve deeper analysis. A longer delivery time is not automatically the same as a late delivery: lateness depends on the estimated delivery date.
+
+**Limitations:** The customer table retains a single ZIP prefix for each unique customer, so this is not a reliable per-order historical destination-state analysis. The calculated time runs from purchase to delivery, not solely from shipping to delivery. States with fewer than 100 qualifying orders and orders missing delivery dates are excluded. The displayed averages are rounded to one decimal place and do not show the distribution or variability of delivery times within each state.
+
 ## Other analyses
 
 | Query | Business question | Verified output |
 |---|---|---|
-| Q9 | Average delivery time by state | Pending |
 | Q10 | Lowest-rated categories | Pending |
 
 ## What I would investigate next
