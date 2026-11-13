@@ -1,6 +1,6 @@
 # Entity Relationship Diagram — Oracle 3NF Model
 
-This diagram documents the relationships declared in `oracle/01_schema.sql`. GitHub renders the Mermaid diagram below.
+I designed this relational model to keep customer, order, product, payment, and review information in separate tables rather than repeating everything in one dataset. The diagram follows the keys and relationships defined in [`oracle/01_schema.sql`](../oracle/01_schema.sql).
 
 ```mermaid
 erDiagram
@@ -64,4 +64,4 @@ erDiagram
 
 **Modeling caveat:** The `customers` table keeps one ZIP prefix per unique customer (chosen from their latest order). Therefore, state-level delivery analysis uses that retained location rather than the historical address on each order. State-level findings should be labeled accordingly. The source dataset has a separate per-order `customer_id`; preserving that mapping in a future version would improve historical geographic accuracy.
 
-**Execution status:** Diagram is derived from SQL definitions; Oracle execution and row-count validation remain pending.
+**Implementation:** The schema has been run in Oracle and the nine final-table counts have been reconciled against the staging data. See the [data quality report](../results/data_quality_report.md) for the checks.
