@@ -1,6 +1,6 @@
 # Olist E-Commerce Customer Analytics — Findings Report
 
-**Progress:** Q1–Q7 have been checked against Oracle outputs. Q8–Q10 are still pending.
+**Progress:** Q1–Q8 have been checked against Oracle outputs. Q9 and Q10 are still pending.
 
 ## What I set out to learn
 
@@ -201,11 +201,35 @@ I wanted to see what the order data could tell me about customer experience and 
 
 **Validation note:** I initially ran a query that repeated reviews for orders with multiple items and could include reviews outside the delivered-order group. The corrected query uses one observation per reviewed order per seller and restricts the reviewed orders to the delivered-only cohort. The [original result export](q7_top_sellers_initial.csv) is retained for comparison, but its review averages should not be used.
 
+## Q8 — Which payment methods account for the most payment value?
+
+**Question:** How is recorded payment value distributed across payment methods?
+
+**How I checked it:** I grouped `ORDER_PAYMENTS` by `PAYMENT_TYPE`, counted distinct order IDs in each group, added up `PAYMENT_VALUE`, and calculated each method's percentage of total recorded payment value with a window function. I ran the query in Oracle SQL Developer and checked the five-row output on November 13, 2026. The SQL is in [`oracle/04_queries.sql`](../oracle/04_queries.sql).
+
+![Payment methods by share of total recorded payment value](../visualizations/payment_methods.svg)
+
+[Download the Q8 result CSV](q8_payment_methods.csv)
+
+| Payment method | Distinct orders using method | Recorded payment value (BRL) | Share of total value |
+|---|---:|---:|---:|
+| credit_card | 76,505 | 12,542,084.19 | 78.34% |
+| boleto | 19,784 | 2,869,361.27 | 17.92% |
+| voucher | 3,866 | 379,436.87 | 2.37% |
+| debit_card | 1,528 | 217,989.79 | 1.36% |
+| not_defined | 3 | 0.00 | 0.00% |
+| **Total payment value** | **Not additive across methods** | **16,008,872.12** | **≈100%** |
+
+**What I found:** Credit cards accounted for **78.34%** of payment value, or **BRL 12,542,084.19**. Boleto was second with **17.92%**. Combined, these two methods made up approximately **96.26%** of recorded payment value, using the individually rounded percentages.
+
+**Why it matters:** The distribution suggests that credit cards and boleto are especially important payment methods in the historical data. This could help frame a follow-up analysis of checkout behavior or payment mix, but the data here does not show conversion rates or payment preference by customer.
+
+**Limitations:** The percentages represent **payment value**, not the percentage of shoppers or orders. An order can have more than one payment record or payment method, so distinct order counts across categories should not be summed as a grand total. Payment value may include components outside merchandise item price, and it should not be interpreted as net profit. The displayed shares round to 99.99% rather than exactly 100% because of rounding.
+
 ## Other analyses
 
 | Query | Business question | Verified output |
 |---|---|---|
-| Q8 | Payment mix | Pending |
 | Q9 | Average delivery time by state | Pending |
 | Q10 | Lowest-rated categories | Pending |
 
