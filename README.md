@@ -24,6 +24,8 @@ The dataset covers Brazilian online orders from 2016 to 2018. I started this as 
 
 **Order status.** Out of **99,441** recorded orders, **96,478 (97.02%)** were marked as delivered. The rest were listed as shipped, canceled, unavailable, invoiced, processing, created, or approved. A delivered status doesn't guarantee every delivery date is present; eight delivered orders have no recorded actual delivery timestamp.
 
+**Late deliveries by state.** Alagoas (AL) had the highest late-delivery rate in the Q4 analysis (**23.9%**) among customer-location states with at least 100 delivered orders and recorded delivery dates. These state assignments use each customer's retained ZIP prefix and may not match the address on every order.
+
 The detailed query outputs, methods, and caveats are in the [findings report](results/FINDINGS_REPORT.md).
 
 ## Visualizations
@@ -40,6 +42,10 @@ The detailed query outputs, methods, and caveats are in the [findings report](re
 
 ![Order statuses and their share of all Olist orders](visualizations/order_status.svg)
 
+
+### Late-delivery rates by customer state
+
+![Q4 late-delivery percentages across the 24 qualifying Brazilian states](visualizations/late_deliveries_by_state.svg)
 
 ### Delivery time and review scores
 
