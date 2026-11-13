@@ -38,7 +38,9 @@ SELECT l.state,
 FROM orders o
 JOIN customers c ON c.customer_unique_id = o.customer_unique_id
 JOIN locations l ON l.zip_prefix = c.zip_prefix
-WHERE o.status = 'delivered' AND o.delivered_customer_ts IS NOT NULL
+WHERE o.status = 'delivered'
+  AND o.delivered_customer_ts IS NOT NULL
+  AND o.estimated_delivery_ts IS NOT NULL
 GROUP BY l.state
 HAVING COUNT(*) >= 100
 ORDER BY late_pct DESC;
@@ -132,7 +134,7 @@ ORDER BY ts.revenue DESC;
 SELECT payment_type,
        COUNT(DISTINCT order_id) AS orders,
        ROUND(SUM(payment_value), 2) AS total_paid,
-       ROUND(100.0 * SUM(payment_value) / SUM(SUM(payment_value)) OVER (), 1) AS pct_of_total
+       ROUND(100.0 * SUM(payment_value) / SUM(SUM(payment_value)) OVER (), 2) AS pct_of_total
 FROM order_payments
 GROUP BY payment_type
 ORDER BY total_paid DESC;
@@ -145,7 +147,9 @@ SELECT l.state,
 FROM orders o
 JOIN customers c ON c.customer_unique_id = o.customer_unique_id
 JOIN locations l ON l.zip_prefix = c.zip_prefix
-WHERE o.delivered_customer_ts IS NOT NULL
+WHERE o.status = 'delivered'
+  AND o.delivered_customer_ts IS NOT NULL
+  AND o.purchase_ts IS NOT NULL
 GROUP BY l.state
 HAVING COUNT(*) >= 100
 ORDER BY avg_days DESC;
