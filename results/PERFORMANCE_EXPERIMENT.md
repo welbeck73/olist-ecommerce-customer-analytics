@@ -18,7 +18,15 @@ Both versions join `ORDERS` to `ORDER_ITEMS` and measure the number of distinct 
 
 ## Results
 
-**Not yet executed.** Query plans, runtime measurements, and performance improvements have not been established. This document is a repeatable experiment protocol, not evidence of faster execution.
+**Index inventory verified in SQL Developer (November 13, 2026):**
+
+| Index | Reported status | Uniqueness |
+|---|---|---|
+| `IDX_ORDERS_CUSTOMER` | VALID | NONUNIQUE |
+| `IDX_ORDERS_PURCHASE` | VALID | NONUNIQUE |
+| `SYS_C0036983` | VALID | UNIQUE |
+
+The screenshot establishes that these indexes exist and have `VALID` status. The `SYS_C0036983` index is likely associated with the primary key; its columns have not been verified in the index-inventory output. **The two query plans and elapsed runtime comparisons are still pending.** No performance improvement is claimed.
 
 ## Notes and limitations
 
