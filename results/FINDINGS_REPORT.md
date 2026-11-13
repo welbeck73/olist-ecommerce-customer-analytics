@@ -13,7 +13,7 @@ I wanted to see what the order data could tell me about customer experience and 
 - [x] Run `03_load.sql`; final-table row counts reconciled against staging-derived expectations
 - [x] Check orphaned foreign keys and unexpected nulls (see `data_quality_report.md`; eight delivered-status records missing delivery dates flagged)
 - [ ] Execute all ten queries from `04_queries.sql`
-- [ ] Finish exporting and documenting the remaining query results (Q1, Q5, Q6 screenshots reviewed; Q2 CSV compared in Python)
+- [ ] Finish exporting and documenting the remaining query results (Q1, Q5, Q6; Q2 CSV compared in Python)
 - [x] Record query result dates and analytical limitations for completed questions (remaining queries pending)
 
 ## Q5 — Relationship Between Delivery Performance and Customer Satisfaction
