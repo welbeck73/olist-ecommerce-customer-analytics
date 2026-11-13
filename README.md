@@ -22,6 +22,8 @@ The dataset covers Brazilian online orders from 2016 to 2018. I started this as 
 
 **Monthly sales.** November 2017 had the highest monthly item-price sales in Q2: **BRL 1,010,271.37** across **7,451** orders. I compared all 24 monthly rows from Oracle with the chart dataset in Python; the comparison passed.
 
+**Order status.** Out of **99,441** recorded orders, **96,478 (97.02%)** were marked as delivered. The rest were listed as shipped, canceled, unavailable, invoiced, processing, created, or approved. A delivered status doesn't guarantee every delivery date is present; eight delivered orders have no recorded actual delivery timestamp.
+
 The detailed query outputs, methods, and caveats are in the [findings report](results/FINDINGS_REPORT.md).
 
 ## Visualizations
@@ -33,6 +35,10 @@ The detailed query outputs, methods, and caveats are in the [findings report](re
 ### Monthly merchandise sales
 
 ![Olist monthly item-price sales, 2016–2018](visualizations/monthly_sales.svg)
+
+### Order status distribution
+
+![Order statuses and their share of all Olist orders](visualizations/order_status.svg)
 
 ### Delivery time and review scores
 
