@@ -1,6 +1,6 @@
 # Olist E-Commerce Customer Analytics — Findings Report
 
-**Progress:** Q1–Q6 have been checked against Oracle outputs. Q7 sales and order counts have been captured from Oracle; Q7 seller-review averages require a corrected-query rerun. Q8–Q10 are still pending.
+**Progress:** Q1–Q7 have been checked against Oracle outputs. Q8–Q10 are still pending.
 
 ## What I set out to learn
 
@@ -170,40 +170,41 @@ I wanted to see what the order data could tell me about customer experience and 
 
 **Limitations:** The normalized `CUSTOMERS` table retains one ZIP prefix per unique customer, chosen from their latest order. It cannot reliably recover the actual shipping state for each historical order, so **these are customer-location groupings, not exact order-destination results**. The analysis excludes orders not marked delivered, orders without an actual delivery timestamp, and groups with fewer than 100 eligible orders. Percentages are rounded to one decimal in the exported screenshot; exact late-order counts are not included in that output.
 
-## Q7 — Top sellers by merchandise sales (review metric pending correction)
+## Q7 — Which sellers generated the most merchandise sales?
 
-**Question:** Which sellers generated the highest merchandise sales, and how were their orders reviewed?
+**Question:** Which sellers have the highest delivered-order item-price sales, and how did customers review orders involving them?
 
-**What I ran:** I grouped delivered-order items by seller, summed item prices, and counted distinct orders. The first Oracle query also joined reviews to order items, but that approach repeats an order's review when a seller has multiple items in the order and can include reviews from orders outside the delivered-only sales group. I have retained those original outputs below for traceability **without treating the review averages as final**.
+**How I checked it:** I summed item prices for delivered orders by seller, counted distinct orders, and ranked sellers by sales total. To avoid giving orders with several items extra influence, I first averaged multiple reviews within each order, then averaged across distinct reviewed orders associated with each seller. I ran the corrected query in Oracle SQL Developer on November 13, 2026. The SQL is available in [`oracle/04_queries.sql`](../oracle/04_queries.sql).
 
-![Top sellers by delivered-order item-price sales](../visualizations/top_sellers.svg)
+![Top ten sellers by delivered-order item-price sales](../visualizations/top_sellers.svg)
 
-[Original Q7 screenshot values as CSV](q7_top_sellers_initial.csv)
+[Download the corrected Q7 results](q7_top_sellers_verified.csv)
 
-| Seller rank | Delivered-order item-price sales (BRL) | Distinct delivered orders | Initial average review (needs recalculation) |
-|---:|---:|---:|---:|
-| 1 | 226,987.93 | 1,124 | 4.12 |
-| 2 | 217,940.44 | 348 | 4.08 |
-| 3 | 196,882.12 | 1,772 | 3.80 |
-| 4 | 190,917.14 | 578 | 4.34 |
-| 5 | 186,570.05 | 973 | 3.35 |
-| 6 | 165,981.49 | 319 | 4.21 |
-| 7 | 159,816.87 | 1,311 | 4.07 |
-| 8 | 139,658.69 | 1,145 | 4.23 |
-| 9 | 138,208.56 | 910 | 3.85 |
-| 10 | 131,836.71 | 1,261 | 4.05 |
+| Rank | Item-price sales (BRL) | Delivered orders | Reviewed orders | Average review |
+|---:|---:|---:|---:|---:|
+| 1 | 226,987.93 | 1,124 | 1,116 | 4.15 |
+| 2 | 217,940.44 | 348 | 346 | 4.19 |
+| 3 | 196,882.12 | 1,772 | 1,753 | 3.85 |
+| 4 | 190,917.14 | 578 | 574 | 4.37 |
+| 5 | 186,570.05 | 973 | 967 | 3.50 |
+| 6 | 165,981.49 | 319 | 318 | 4.36 |
+| 7 | 159,816.87 | 1,311 | 1,305 | 4.18 |
+| 8 | 139,658.69 | 1,145 | 1,137 | 4.27 |
+| 9 | 138,208.56 | 910 | 902 | 4.01 |
+| 10 | 131,836.71 | 1,261 | 1,253 | 4.20 |
 
-**What I found:** The highest-ranked seller generated **BRL 226,987.93** across **1,124** distinct delivered orders. The second ranked seller generated **BRL 217,940.44** across **348** distinct delivered orders. The different order counts show why sales and order volume should be interpreted together. These are item-price totals, not profit.
+**What I found:** The top seller generated **BRL 226,987.93** in item-price sales across **1,124** delivered orders. Of those, **1,116** had usable review data, with an average score of **4.15 out of 5**. The fourth-ranked seller had the highest mean review score (**4.37**) among these ten sellers, despite ranking fourth in merchandise sales.
 
-**Next validation:** I revised [Q7 in `oracle/04_queries.sql`](../oracle/04_queries.sql) to calculate mean review score per order first, then average those scores over distinct delivered orders associated with each seller. This prevents extra weight from duplicate seller-order item rows, while keeping the sales calculation unchanged. **The revised review numbers have not yet been executed in Oracle** and must replace the initial averages before completing the seller satisfaction analysis.
+**Why it matters:** Higher sales do not automatically mean higher customer review scores. Looking at both metrics gives a broader picture of seller-related outcomes, although these results alone cannot tell us why one seller performs better than another.
 
-**Limitations:** Order-level reviews are not seller-specific. An order containing products from more than one seller may contribute the same review score to multiple sellers. The seller IDs are anonymized in the dataset. The initial review figures shown here should not be used for comparative conclusions.
+**Limitations:** Reviews belong to whole orders rather than individual sellers. A review may therefore be associated with more than one seller when an order contains items from multiple sellers. Item-price sales exclude freight and costs; they are not profit. Seller identifiers are anonymized, and the ranking includes delivered orders only.
+
+**Validation note:** I initially ran a query that repeated reviews for orders with multiple items and could include reviews outside the delivered-order group. The corrected query uses one observation per reviewed order per seller and restricts the reviewed orders to the delivered-only cohort. The [original result export](q7_top_sellers_initial.csv) is retained for comparison, but its review averages should not be used.
 
 ## Other analyses
 
 | Query | Business question | Verified output |
 |---|---|---|
-| Q7 | Top sellers and reviews | Sales checked; corrected review query pending |
 | Q8 | Payment mix | Pending |
 | Q9 | Average delivery time by state | Pending |
 | Q10 | Lowest-rated categories | Pending |
