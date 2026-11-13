@@ -26,7 +26,22 @@ Both versions join `ORDERS` to `ORDER_ITEMS` and measure the number of distinct 
 | `IDX_ORDERS_PURCHASE` | VALID | NONUNIQUE |
 | `SYS_C0036983` | VALID | UNIQUE |
 
-The screenshot establishes that these indexes exist and have `VALID` status. The `SYS_C0036983` index is likely associated with the primary key; its columns have not been verified in the index-inventory output. **The two query plans and elapsed runtime comparisons are still pending.** No performance improvement is claimed.
+The screenshot establishes that these indexes exist and have `VALID` status. The `SYS_C0036983` index is likely associated with the primary key; its columns have not been verified in the index-inventory output. **Test A / TRUNC() plan verified from SQL Developer screenshot (November 13, 2026):**
+
+| Plan detail | Oracle EXPLAIN PLAN output |
+|---|---|
+| Statement ID | `OLIST_Q2_TRUNC_BASE` |
+| Plan hash value | `3479646620` |
+| Estimated statement cost | 1,029 |
+| `ORDERS` access | `TABLE ACCESS FULL`, estimated 994 rows, cost 481 |
+| `ORDER_ITEMS` access | `TABLE ACCESS FULL`, estimated 112K rows, cost 546 |
+| Join | `HASH JOIN`, estimated 1,101 rows, cost 1,028 |
+| Aggregation | `HASH GROUP BY` and `SORT AGGREGATE` |
+| Predicate | Filter applies `TRUNC` to the purchase timestamp |
+
+This demonstrates the optimizer's **estimated** choice for the TRUNC-based filter, not its actual elapsed runtime. The index on `ORDERS.PURCHASE_TS` existed but was not chosen for this plan. Oracle may reasonably prefer full table access for this query and dataset.
+
+**Test B / date-range plan, equal-result checks, and elapsed runtime comparisons are still pending.** No performance improvement is claimed.
 
 ## Notes and limitations
 
