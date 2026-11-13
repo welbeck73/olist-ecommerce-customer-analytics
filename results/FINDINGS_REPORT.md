@@ -1,6 +1,6 @@
 # Olist E-Commerce Customer Analytics — Findings Report
 
-**Progress:** Q1, Q2, Q5, and Q6 have been checked against Oracle outputs. The remaining six questions are still in progress.
+**Progress:** Q1, Q2, Q3, Q5, and Q6 have been checked against Oracle outputs. Five questions remain in progress.
 
 ## What I set out to learn
 
@@ -101,11 +101,36 @@ I wanted to see what the order data could tell me about customer experience and 
 
 **Limitations:** Item-price sales exclude freight and do not represent net profit or verified accounting revenue. Orders without items are excluded by the inner join. Coverage of September 2016 and September 2018 is sparse, and months in the historical dataset are not necessarily complete. Month-by-month variation alone does not establish seasonality or business drivers.
 
+## Q3 — What happened to the orders?
+
+**Question:** How many orders were delivered, shipped, canceled, or left in another status?
+
+**How I checked it:** I grouped the `ORDERS` table by `STATUS`, counted the orders in each group, and used an Oracle window function to calculate each group's share of all orders. The SQL is in [Q3 of `oracle/04_queries.sql`](../oracle/04_queries.sql). I checked the results against the Oracle SQL Developer output on November 13, 2026.
+
+![Olist order status distribution](../visualizations/order_status.svg)
+
+| Order status | Orders | Share of all orders |
+|---|---:|---:|
+| delivered | 96,478 | 97.02% |
+| shipped | 1,107 | 1.11% |
+| canceled | 625 | 0.63% |
+| unavailable | 609 | 0.61% |
+| invoiced | 314 | 0.32% |
+| processing | 301 | 0.30% |
+| created | 5 | 0.01% |
+| approved | 2 | 0.00% |
+| **Total** | **99,441** | **100%** |
+
+**What I found:** Most orders (**97.02%**) are marked as delivered. The remaining **2,963 orders (2.98%)** fall into other statuses, with `shipped` the largest of those groups. The percentages are rounded individually, so the displayed values may not add to exactly 100%.
+
+**Why it matters:** The status breakdown gives a useful starting picture of how far orders progressed through fulfillment. I would look more closely at orders marked shipped, unavailable, and canceled before drawing conclusions about operational problems. The historical snapshot does not show how long an order stayed in its status.
+
+**Limitations:** Order status is not a complete measure of successful delivery or fulfillment time. Earlier data-quality checks found **eight orders marked delivered with missing actual delivery timestamps**. I also can't infer whether orders in other statuses were eventually completed after the dataset ended.
+
 ## Other analyses
 
 | Query | Business question | Verified output |
 |---|---|---|
-| Q3 | Order status breakdown | Pending |
 | Q4 | Late delivery by state | Pending |
 | Q7 | Top sellers and reviews | Pending |
 | Q8 | Payment mix | Pending |
