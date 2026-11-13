@@ -30,6 +30,8 @@ The dataset covers Brazilian online orders from 2016 to 2018. I started this as 
 
 **Payment methods.** Credit cards accounted for **78.34%** of recorded payment value (BRL 12,542,084.19), followed by boleto at **17.92%**. These are shares of payment value, not shares of customers or unique orders.
 
+**Delivery duration by state.** Amazonas (AM) had the longest average purchase-to-delivery time (**26.4 days**) among states with at least 100 eligible delivered orders; São Paulo (SP) had the shortest (**8.8 days**). State groupings reflect each customer's retained ZIP prefix, not necessarily each order's original shipping address.
+
 The detailed query outputs, methods, and caveats are in the [findings report](results/FINDINGS_REPORT.md).
 
 ## Visualizations
@@ -58,6 +60,10 @@ The detailed query outputs, methods, and caveats are in the [findings report](re
 ### Payment methods
 
 ![Q8 payment value distribution across methods](visualizations/payment_methods.svg)
+
+### Average delivery time by customer state
+
+![Q9 average purchase-to-delivery time for 24 Brazilian customer-location states](visualizations/delivery_time_by_state.svg)
 
 ### Delivery time and review scores
 
