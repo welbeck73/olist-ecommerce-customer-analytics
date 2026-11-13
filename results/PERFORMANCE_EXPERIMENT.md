@@ -41,7 +41,22 @@ The screenshot establishes that these indexes exist and have `VALID` status. The
 
 This demonstrates the optimizer's **estimated** choice for the TRUNC-based filter, not its actual elapsed runtime. The index on `ORDERS.PURCHASE_TS` existed but was not chosen for this plan. Oracle may reasonably prefer full table access for this query and dataset.
 
-**Test B / date-range plan, equal-result checks, and elapsed runtime comparisons are still pending.** No performance improvement is claimed.
+**Test B / date-range plan verified from SQL Developer screenshot (November 13, 2026):**
+
+| Plan detail | Oracle EXPLAIN PLAN output |
+|---|---|
+| Statement ID | `OLIST_Q2_RANGE_BASE` |
+| Plan hash value | `3479646620` |
+| Estimated statement cost | 1,026 |
+| `ORDERS` access | `TABLE ACCESS FULL`, estimated 7,622 rows, cost 478 |
+| `ORDER_ITEMS` access | `TABLE ACCESS FULL`, estimated 112K rows, cost 546 |
+| Join | `HASH JOIN`, estimated 8,440 rows, cost 1,025 |
+| Aggregation | `HASH GROUP BY` and `SORT AGGREGATE` |
+| Predicate | `PURCHASE_TS >= TIMESTAMP '2017-11-01 00:00:00'` and `PURCHASE_TS < TIMESTAMP '2017-12-01 00:00:00'` |
+
+**Comparison:** Both plans have the same plan hash (`3479646620`) and use full scans of both tables with a hash join. The estimated statement cost is 1,029 for the TRUNC version and 1,026 for the range version, a difference of `(1029 - 1026) / 1029 × 100 ≈ 0.29%`. The estimated filtered `ORDERS` row count changes from 994 to 7,622, despite the calendar-month predicates being semantically equivalent. The screenshot does not establish why these estimates differ.
+
+**Still pending:** Execute the actual SELECTs to confirm equal order counts and item-price sales, then collect repeatable runtime measurements if practical. No actual speedup has been demonstrated.
 
 ## Notes and limitations
 
