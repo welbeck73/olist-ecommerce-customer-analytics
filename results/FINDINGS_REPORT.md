@@ -1,10 +1,10 @@
 # Olist E-Commerce Customer Analytics — Findings Report
 
-**Progress:** Q1–Q9 have been checked against Oracle outputs. The original Q10 query ran successfully, but its item-weighted review calculation is being checked with a corrected order-level query before Q10 is marked complete.
+**Progress:** All ten core SQL business questions (Q1–Q10) have been run and checked against Oracle SQL Developer outputs. The corrected order-level Q10 result was verified on November 13, 2026.
 
 ## What I set out to learn
 
-I wanted to see what the order data could tell me about customer experience and shopping habits. I started with delivery delays and reviews, then looked at repeat customers, product sales, and sales over time. I will add the remaining regional, seller, and payment analyses as I complete them.
+I wanted to see what the order data could tell me about customer experience and shopping habits. I started with delivery delays and reviews, then looked at repeat customers, product sales, and sales over time. I also explored regional delivery differences, seller performance, and payment methods.
 
 ## Reproducibility checklist
 
@@ -12,8 +12,8 @@ I wanted to see what the order data could tell me about customer experience and 
 - [x] Import eight prepared CSV datasets into staging tables (counts reconciled in the data quality report)
 - [x] Run `03_load.sql`; final-table row counts reconciled against staging-derived expectations
 - [x] Check orphaned foreign keys and unexpected nulls (see `data_quality_report.md`; eight delivered-status records missing delivery dates flagged)
-- [ ] Execute all ten queries from `04_queries.sql`
-- [ ] Finish exporting and documenting the remaining query results (Q1, Q5, Q6; Q2 CSV compared in Python)
+- [x] Execute all ten core queries from `04_queries.sql` (with corrected order-level review calculations for Q7 and Q10)
+- [x] Record and document outputs for all ten questions (including Q2 comparison in Python and original/corrected Q7 and Q10 results)
 - [x] Record query result dates and analytical limitations for completed questions (remaining queries pending)
 
 ## Q5 — Relationship Between Delivery Performance and Customer Satisfaction
@@ -269,38 +269,36 @@ I wanted to see what the order data could tell me about customer experience and 
 
 **Limitations:** The customer table retains a single ZIP prefix for each unique customer, so this is not a reliable per-order historical destination-state analysis. The calculated time runs from purchase to delivery, not solely from shipping to delivery. States with fewer than 100 qualifying orders and orders missing delivery dates are excluded. The displayed averages are rounded to one decimal place and do not show the distribution or variability of delivery times within each state.
 
-## Q10 — Which categories received the lowest review scores? (verification in progress)
+## Q10 — Which product categories are associated with lower reviews?
 
-**Question:** Which product categories are associated with the lowest customer review scores?
+**Question:** Which product categories have the lowest average customer review scores among categories represented in at least 100 reviewed orders?
 
-**Initial Oracle result:** I ran the original query on November 13, 2026. It joined order items to reviews, grouped by category, and returned the ten lowest averages among groups with at least 100 joined item-review rows. Those initial outputs are preserved here, but the averages can be affected by orders containing multiple items or multiple reviews.
+**How I checked it:** I joined orders and product categories through `ORDER_ITEMS`, `PRODUCTS`, and `PRODUCT_CATEGORIES`, then linked each order to its review score. When an order had multiple reviews, I averaged them first. I kept each order/category pair only once so multiple items in the same category would not give that order extra weight. I ran the corrected query in Oracle SQL Developer on November 13, 2026, and verified its ten-row output. See [Q10 in `oracle/04_queries.sql`](../oracle/04_queries.sql).
 
-[Initial Q10 output CSV](q10_categories_initial.csv)
+![Corrected mean order-review scores for ten low-scoring product categories](../visualizations/lowest_rated_categories.svg)
 
-| Category | Joined item-review rows | Initial average review |
+[Download corrected Q10 results CSV](q10_categories_verified.csv)
+
+| Category | Reviewed orders | Average review score |
 |---|---:|---:|
-| office_furniture | 1,687 | 3.49 |
-| fashion_male_clothing | 131 | 3.64 |
-| fixed_telephony | 262 | 3.68 |
-| audio | 361 | 3.83 |
-| home_confort | 435 | 3.83 |
-| unknown | 1,598 | 3.84 |
-| construction_tools_safety | 193 | 3.84 |
-| bed_bath_table | 11,137 | 3.90 |
-| furniture_living_room | 502 | 3.90 |
-| furniture_decor | 8,331 | 3.90 |
+| office_furniture | 1,263 | 3.62 |
+| fashion_male_clothing | 111 | 3.70 |
+| audio | 347 | 3.83 |
+| construction_tools_safety | 166 | 3.85 |
+| home_confort | 395 | 3.86 |
+| fixed_telephony | 214 | 3.90 |
+| unknown | 1,439 | 3.91 |
+| fashion_underwear_beach | 120 | 3.93 |
+| bed_bath_table | 9,313 | 3.97 |
+| home_construction | 487 | 3.97 |
 
-**Initial observation:** `office_furniture` has the lowest average in the original query (**3.49/5**), but I am not treating the ranking as final until the review-weighting issue is addressed.
+**What I found:** `office_furniture` had the lowest average score in the corrected top-ten ranking (**3.62 out of 5** across **1,263 reviewed orders**). The initial item-weighted query gave this category a lower score of **3.49**. Some other categories also moved in or out of the bottom ten after the correction. This showed why the unit of analysis matters.
 
-**Correction to verify:** I updated [Q10 in `oracle/04_queries.sql`](../oracle/04_queries.sql) to average any multiple reviews for an order first, keep each order/category pair once, and compare categories with at least 100 reviewed orders. This changes the unit of analysis from joined item-review rows to reviewed orders associated with a category. **The revised result has not yet been executed and verified in Oracle.**
+**Why it matters:** Categories associated with consistently lower order reviews could be useful starting points for investigating product experience, delivery issues, and seller performance. The scores alone do not identify the causes.
 
-**Limitations:** Customer review scores belong to whole orders rather than individual products. Orders containing multiple categories can contribute their review to each category, so the results are associations rather than product-specific ratings. The `unknown` category includes products without a mapped category label.
+**Limitations:** A customer reviews the **whole order**, not necessarily an individual item or category. Orders with products from several categories can contribute the same order-level score to multiple categories. The `unknown` group covers products without a mapped category, and the 100-order cutoff excludes categories with smaller samples.
 
-## Other analyses
-
-| Query | Business question | Verified output |
-|---|---|---|
-| Q10 | Lowest-rated categories | Initial results recorded; corrected analysis pending |
+**Validation trail:** The [original Q10 output](q10_categories_initial.csv) is kept for comparison, but the corrected [Q10 results](q10_categories_verified.csv) are the figures used for the final analysis and chart.
 
 ## What I would investigate next
 
