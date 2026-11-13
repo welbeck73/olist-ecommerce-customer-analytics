@@ -2,17 +2,17 @@
 
 **Project:** E-Commerce Orders Database & Customer Analytics  
 **Database:** Oracle Autonomous Database / SQL Developer  
-**Status:** All nine transformation-aware final-table counts verified against staging-derived expected counts from the project owner's SQL Developer script output on November 10, 2026; all nine primary-key constraints and nine foreign-key constraints verified enabled and validated; all three orphan-record checks returned zero; order-field missing-value counts documented; review-score minimum/maximum and missing count documented; review-score validation complete; delivery-status breakdown documented; 8 delivered-status orders missing delivery timestamps flagged for investigation
+**Summary:** The nine final tables matched their transformation-aware expected row counts. Primary and foreign keys were enabled and validated, and the orphan-record and review-score checks passed. Eight orders marked `delivered` lack actual delivery timestamps and still need investigation.
 
-## Purpose
+## Why I checked the data
 
-Before drawing conclusions about customer satisfaction, late deliveries, and repeat purchases, check that the relational database loaded correctly and that important business fields are usable.
+Before analyzing deliveries, reviews, and repeat purchases, I wanted to make sure the data had loaded correctly and the relationships between tables worked as intended. I checked record counts, keys, unmatched records, and missing or unusual values.
 
-The reproducible checks are in [`oracle/04_data_validation.sql`](../oracle/04_data_validation.sql). The source-to-final row-count section records SQL Developer results supplied by the project owner on November 10, 2026, using staging tables and load-transformation logic. Primary-key, foreign-key, and orphan-record results are also verified from the project owner's SQL Developer screenshots. Missing-value and order-status results have also been verified from screenshots. The 8 delivered-status records with missing delivery timestamps remain a documented anomaly for investigation.
+The reproducible checks are in [`oracle/04_data_validation.sql`](../oracle/04_data_validation.sql). I ran these checks in Oracle SQL Developer on November 10, 2026. I compared staging and final-table counts using the load rules, checked the constraints, and reviewed missing values by order status. The eight delivered-status records without delivery timestamps are noted below rather than silently removed.
 
 ## 1. Source-to-final row-count reconciliation
 
-These values were produced by a SQL query against the imported staging tables and final Oracle tables, with expected final counts calculated using the selection/deduplication rules in `oracle/03_load.sql`. Evidence: project owner's Oracle SQL Developer screenshot, November 10, 2026.
+These counts come from a SQL query comparing the staging tables with the final tables. The expected counts follow the deduplication and row-selection rules in `oracle/03_load.sql` (SQL Developer results, November 10, 2026).
 
 | Final table | Source rows | Expected final rows | Actual final rows | Status |
 |---|---:|---:|---:|---|
@@ -75,7 +75,7 @@ These values were produced by a SQL query against the imported staging tables an
 | PRODUCTS | PRODUCT_CATEGORIES | ENABLED | VALIDATED |
 | SELLERS | LOCATIONS | ENABLED | VALIDATED |
 
-**Orphan-record checks: PASS (3/3).** Separate left-join checks confirmed the following counts:
+**Orphan records: 0 in all three checks.** I used left joins to look for items, payments, and reviews whose orders were missing:
 
 | Check | Actual count | Expected | Result |
 |---|---:|---:|---|
@@ -98,13 +98,11 @@ These values were produced by a SQL query against the imported staging tables an
 | Reviews missing score | 0 |
 | Review scores outside 1–5 | 0 — PASS |
 
-**Order-field validation (November 10, 2026):** SQL Developer reported **99,441 total orders**, **0** missing customer IDs, **0** missing purchase timestamps, **2,965** missing actual delivery timestamps, and **0** missing estimated delivery timestamps. Thus **96,476** orders have a populated actual delivery timestamp, and the missing actual-delivery share is **2.98%** (2,965 / 99,441 × 100, rounded). These are observed missing values, not yet classified as data errors.
+**Missing order fields (November 10, 2026):** SQL Developer reported **99,441 total orders**, **0** missing customer IDs, **0** missing purchase timestamps, **2,965** missing actual delivery timestamps, and **0** missing estimated delivery timestamps. Thus **96,476** orders have a populated actual delivery timestamp, and the missing actual-delivery share is **2.98%** (2,965 / 99,441 × 100, rounded). These are observed missing values, not yet classified as data errors.
 
 **Review-score validation (November 10, 2026):** SQL Developer screenshot shows **99,224 total reviews**, **0 missing review scores**, minimum score **1**, and maximum score **5**. A separate SQL query confirmed **0 review scores outside 1–5**. Together with zero missing scores, this confirms all 99,224 review scores satisfy the expected range. Evidence: project owner's SQL Developer screenshot, November 10, 2026.
 
-Some missing delivery timestamps are legitimate for cancelled or undelivered orders. Report missingness by order status rather than treating all missing values as errors. The order-status breakdown of all 2,965 missing actual delivery timestamps is documented below. Review-score range and null checks passed.
-
-
+A missing delivery date does not always mean a bad record: an order may not have reached the customer. I broke the missing dates down by status to see which ones needed attention. The review-score checks passed.
 
 ### Missing delivery timestamps by order status (verified)
 
@@ -122,7 +120,7 @@ Some missing delivery timestamps are legitimate for cancelled or undelivered ord
 
 **Interpretation:** These counts reconcile exactly with the earlier missing-value query. Of the 2,965 missing delivery timestamps, **2,957** belong to orders whose status is not `delivered`; **8** belong to orders marked `delivered` and warrant investigation as possible status/timestamp inconsistencies. Six `canceled` orders have populated delivery timestamps (625 canceled minus 619 missing); investigate if relevant rather than assuming they are errors.
 
-**Analytical treatment:** For delivery-timeliness comparisons, use only orders with known actual and estimated delivery timestamps and clearly state whether analysis is limited to `delivered` status. Never impute missing dates as on-time or late. These are historical status records; a missing delivery date need not indicate an import failure.
+**How I handle this in analysis:** I compare delivery timing only for records with both actual and estimated delivery timestamps and identify when a query is limited to delivered orders. I do not classify orders with missing dates as on-time or late.
 
 **Evidence:** Project owner's Oracle SQL Developer screenshot, November 10, 2026.
 
@@ -131,11 +129,8 @@ Some missing delivery timestamps are legitimate for cancelled or undelivered ord
 - The historical dataset covers 2016–2018 and one marketplace.
 - The normalized customer table keeps one ZIP prefix per unique customer; that may not describe their location at the time of every order.
 - Foreign-key checks alone cannot establish that every source CSV row was imported.
-- Missing review scores, delivery timestamps, and duplicate review IDs must be considered when interpreting analyses.
+- Missing delivery timestamps and non-unique source review IDs need to be considered when interpreting analyses; no missing or out-of-range review scores were found.
 
-## 6. Next steps
+## 6. What still needs attention
 
-1. Run `oracle/04_data_validation.sql` using the project schema.
-2. Investigate the 8 delivered-status records with missing actual delivery timestamps, and any additional source-to-target discrepancies.
-3. Investigate any discrepancies.
-4. Record whether the database is ready for the ten business-analysis queries.
+The planned validation queries have been run and documented. The eight delivered-status orders without an actual delivery timestamp should be reviewed separately. Analysis can proceed as long as queries handle missing timestamps explicitly and the limitations stay documented.
