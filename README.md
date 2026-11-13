@@ -2,7 +2,7 @@
 
 This project looks at how delivery performance, customer purchasing habits, and product sales shape the online shopping experience. Using the Olist Brazilian E-Commerce dataset, I built a relational database in Oracle, cleaned and checked the data, and wrote SQL queries to answer practical business questions. I also used Python to check query results and create charts that make the findings easier to follow.
 
-The dataset covers Brazilian online orders from 2016 to 2018. I started this as a Database Management Systems project and am extending it into a data analytics portfolio project. The Oracle database and planned data-quality checks are complete; the business analysis is still in progress.
+The dataset covers Brazilian online orders from 2016 to 2018. I started this as a Database Management Systems project and am extending it into a data analytics portfolio project. The Oracle database and data-quality checks are complete, and all ten core SQL business analyses have now been run and checked.
 
 ## What I wanted to find out
 
@@ -10,7 +10,7 @@ The dataset covers Brazilian online orders from 2016 to 2018. I started this as 
 - How often do customers place another order?
 - Which product categories account for the most merchandise sales?
 - How do order volume and sales change over time?
-- Where do delivery outcomes differ across regions? *(analysis in progress)*
+- Where do delivery outcomes differ across customer-location states?
 
 ## Findings so far
 
@@ -32,7 +32,7 @@ The dataset covers Brazilian online orders from 2016 to 2018. I started this as 
 
 **Delivery duration by state.** Amazonas (AM) had the longest average purchase-to-delivery time (**26.4 days**) among states with at least 100 eligible delivered orders; São Paulo (SP) had the shortest (**8.8 days**). State groupings reflect each customer's retained ZIP prefix, not necessarily each order's original shipping address.
 
-**Lowest-rated categories (Q10, under review).** The initial query put office furniture at an average review score of **3.49/5**, but I am checking the ranking with an order-level calculation before reporting it as a final finding.
+**Lowest-rated categories.** Office furniture had the lowest average order review among the ten lowest-rated eligible categories (**3.62/5**, based on **1,263** reviewed orders). I corrected the original item-weighted query so each order contributes only once per category before comparing scores.
 
 The detailed query outputs, methods, and caveats are in the [findings report](results/FINDINGS_REPORT.md).
 
@@ -66,6 +66,10 @@ The detailed query outputs, methods, and caveats are in the [findings report](re
 ### Average delivery time by customer state
 
 ![Q9 average purchase-to-delivery time for 24 Brazilian customer-location states](visualizations/delivery_time_by_state.svg)
+
+### Lowest-rated categories
+
+![Q10 corrected order-level customer review averages for the lowest-rated product categories](visualizations/lowest_rated_categories.svg)
 
 ### Delivery time and review scores
 
