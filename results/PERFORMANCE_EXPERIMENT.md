@@ -60,6 +60,20 @@ This demonstrates the optimizer's **estimated** choice for the TRUNC-based filte
 
 **Still pending:** Independently measure repeated executions for Test A and Test B under comparable conditions. No actual speedup has been demonstrated.
 
+
+### First elapsed-time measurements (November 13, 2026)
+
+Oracle SQL Developer was run with `SET TIMING ON` and `F5`. The Script Output screenshot displays the following first measurements:
+
+| Query | Elapsed time | Result |
+|---|---:|---|
+| Test A — `TRUNC(purchase_ts, 'MM')` | 0.104 seconds | 7,451 orders; BRL 1,010,271.37 |
+| Test B — timestamp range | 0.112 seconds | 7,451 orders; BRL 1,010,271.37 |
+
+The first observed difference is `0.112 - 0.104 = 0.008` seconds (8 milliseconds), with Test A finishing sooner in this single sequence. SQL Developer reports elapsed times, which can include client/server and execution overhead. **This is not a statistically reliable performance comparison.** The lower estimated cost of Test B does not imply faster observed runtime in this one run.
+
+**Next:** Repeat the two queries across multiple runs, alternate their execution order, and compare medians and variability before making any speed claims.
+
 ## Notes and limitations
 
 An `EXPLAIN PLAN` is an **estimated plan**, not a benchmark of elapsed runtime. Optimizer choices depend on table statistics, indexing, data distribution, and database configuration. A lower plan cost does not guarantee that a query actually runs faster. For reliable timing claims, compare multiple executions in similar conditions and consider database caching and cloud workload variation.
